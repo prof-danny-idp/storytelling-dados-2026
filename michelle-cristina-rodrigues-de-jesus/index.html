@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<!-- saved from url=(0107)https://ambientevirtual.idp.edu.br/files/1267948/download?verifier=1DANHRKI3MxGww3PYuHlj4yhtufRwGNaYNGO1vPn -->
+<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Restos a Pagar 2026 — Para onde foi a metade que ainda falta pagar?</title>
+<style>
+  :root{
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --surface-2:      #f9f9f7;
+    --card-border:    rgba(11,11,11,0.10);
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --grid:           #e1e0d9;
+    --baseline:       #c3c2b7;
+    --series-blue:    #2a78d6;
+    --series-blue-100:#cde2fb;
+    --series-blue-600:#184f95;
+    --status-good:      #0ca30c;
+    --status-warning:   #fab219;
+    --status-serious:   #ec835a;
+    --status-critical:  #d03b3b;
+    --chip-good-bg:      #e4f6e4;
+    --chip-warning-bg:   #fff3d6;
+    --chip-serious-bg:   #fde3d8;
+    --chip-critical-bg:  #f9dede;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --surface-2:      #0d0d0d;
+      --card-border:    rgba(255,255,255,0.10);
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --grid:           #2c2c2a;
+      --baseline:       #383835;
+      --series-blue:    #3987e5;
+      --series-blue-100:#184f95;
+      --series-blue-600:#86b6ef;
+      --status-good:      #0ca30c;
+      --status-warning:   #fab219;
+      --status-serious:   #ec835a;
+      --status-critical:  #e66767;
+      --chip-good-bg:      #123312;
+      --chip-warning-bg:   #3a2c08;
+      --chip-serious-bg:   #3a1f14;
+      --chip-critical-bg:  #3a1414;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --surface-2:      #0d0d0d;
+    --card-border:    rgba(255,255,255,0.10);
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --grid:           #2c2c2a;
+    --baseline:       #383835;
+    --series-blue:    #3987e5;
+    --series-blue-100:#184f95;
+    --series-blue-600:#86b6ef;
+    --status-good:      #0ca30c;
+    --status-warning:   #fab219;
+    --status-serious:   #ec835a;
+    --status-critical:  #e66767;
+    --chip-good-bg:      #123312;
+    --chip-warning-bg:   #3a2c08;
+    --chip-serious-bg:   #3a1f14;
+    --chip-critical-bg:  #3a1414;
+  }
+
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--surface-2);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.45;
+  }
+  .wrap{ max-width: 1180px; margin: 0 auto; padding: 28px 20px 64px; }
+
+  header.top{ padding: 8px 4px 28px; border-bottom: 1px solid var(--card-border); margin-bottom: 28px; }
+  .eyebrow{
+    text-transform: uppercase; letter-spacing: 0.08em; font-size: 12px;
+    font-weight: 700; color: var(--text-muted); margin: 0 0 10px;
+  }
+  h1{ font-size: 30px; line-height: 1.2; margin: 0 0 12px; font-weight: 700; max-width: 880px; }
+  .lede{ font-size: 16px; color: var(--text-secondary); max-width: 760px; margin: 0 0 18px; }
+  .question-box{
+    background: var(--surface-1); border: 1px solid var(--card-border); border-left: 4px solid var(--status-serious);
+    border-radius: 8px; padding: 16px 18px; max-width: 820px; font-size: 15px; color: var(--text-primary);
+  }
+  .question-box b{ display:block; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); margin-bottom: 6px; font-weight: 700;}
+
+  /* ---- Hero / KPI ---- */
+  section.hero{
+    display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; margin-bottom: 40px;
+  }
+  @media (max-width: 860px){ section.hero{ grid-template-columns: 1fr; } }
+  .card{
+    background: var(--surface-1); border: 1px solid var(--card-border); border-radius: 12px;
+    padding: 22px 24px 24px;
+  }
+  .hero-figure-card .figure-row{ display:flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  .hero-figure{ font-size: 64px; font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
+  .status-chip{
+    display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700;
+    padding: 5px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing:.03em;
+  }
+  .status-chip .dot{ width:8px; height:8px; border-radius:50%; display:inline-block; }
+  .chip-good{ background: var(--chip-good-bg); color: var(--status-good); }
+  .chip-warning{ background: var(--chip-warning-bg); color: #8a5a00; }
+  :root[data-theme="dark"] .chip-warning{ color:#fab219; }
+  @media (prefers-color-scheme:dark){ :root:where(:not([data-theme="light"])) .chip-warning{ color:#fab219; } }
+  .chip-serious{ background: var(--chip-serious-bg); color: #a8431a; }
+  :root[data-theme="dark"] .chip-serious{ color:#ec835a; }
+  @media (prefers-color-scheme:dark){ :root:where(:not([data-theme="light"])) .chip-serious{ color:#ec835a; } }
+  .chip-critical{ background: var(--chip-critical-bg); color: var(--status-critical); }
+  .hero-figure-card h2{ font-size: 17px; margin: 14px 0 4px; font-weight: 700; }
+  .hero-figure-card p{ font-size: 14px; color: var(--text-secondary); margin: 0 0 18px; max-width: 46ch;}
+
+  .meter{ margin-top: 6px; }
+  .meter-track{
+    height: 14px; border-radius: 7px; background: var(--chip-serious-bg); overflow: hidden; position: relative;
+  }
+  .meter-fill{ height: 100%; border-radius: 7px; background: var(--status-serious); }
+  .meter-labels{ display:flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+
+  .kpi-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .kpi-tile{ background: var(--surface-2); border: 1px solid var(--card-border); border-radius: 10px; padding: 14px 16px; }
+  .kpi-tile .label{ font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+  .kpi-tile .value{ font-size: 22px; font-weight: 700; }
+  .kpi-tile .sub{ font-size: 11.5px; color: var(--text-muted); margin-top: 3px; }
+  .swatch{ width:9px; height:9px; border-radius:2px; display:inline-block; margin-right:6px; }
+
+  /* ---- chart cards ---- */
+  section.charts{ display:grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  @media (max-width: 940px){ section.charts{ grid-template-columns: 1fr; } }
+  figure.chart-card{ margin: 0; }
+  figure.chart-card figcaption.kicker{ font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-muted); font-weight:700; margin-bottom:6px; }
+  figure.chart-card h3{ font-size: 17px; margin: 0 0 4px; line-height:1.3; font-weight:700; }
+  figure.chart-card .deck{ font-size: 13px; color: var(--text-secondary); margin: 0 0 18px; }
+  .legend{ display:flex; flex-wrap:wrap; gap: 14px; margin: 14px 0 4px; font-size:12px; color: var(--text-secondary); }
+  .legend-item{ display:flex; align-items:center; gap:6px; }
+  .legend-item .dot{ width:10px; height:10px; border-radius:50%; flex:none; }
+
+  .col-chart{ display:flex; align-items:flex-end; gap:4px; height: 220px; padding-top: 22px; margin-bottom: 42px; position:relative; border-bottom: 1px solid var(--baseline); }
+  .col-chart .bar-col{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; position:relative; cursor:default; }
+  .col-chart .bar{ width: 100%; max-width: 22px; border-radius: 4px 4px 0 0; position:relative; transition: opacity .15s; }
+  .col-chart .bar-col:hover .bar{ opacity:.82; }
+  .col-chart .val{ font-size: 9.5px; color: var(--text-secondary); margin-bottom: 3px; white-space:nowrap; font-weight:600; }
+  .col-chart .cat{ position:absolute; top:100%; left:50%; margin-top:8px; font-size:9.5px; color: var(--text-muted); white-space:nowrap; transform: translateX(-50%) rotate(-42deg); transform-origin: top center; }
+
+  .hbar-chart{ display:flex; flex-direction:column; gap:12px; }
+  .hbar-row{ display:grid; grid-template-columns: 168px 1fr 66px; align-items:center; gap:10px; }
+  .hbar-row .name{ font-size:12px; color: var(--text-primary); text-align:right; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .hbar-track{ background: var(--surface-2); border-radius: 4px; height: 20px; position:relative; }
+  .hbar-fill{ height: 100%; border-radius: 0 4px 4px 0; position:relative; min-width:3px; }
+  .hbar-row .val{ font-size:12px; font-weight:700; color: var(--text-primary); }
+  .hbar-row .pctdot{ display:inline-flex; align-items:center; gap:5px; font-size:11px; color:var(--text-secondary); margin-left:2px;}
+  .hbar-row .pctdot .dot{ width:8px; height:8px; border-radius:50%; }
+
+  .stackbar-wrap{ margin-top: 6px; }
+  .stackbar{ display:flex; height: 40px; border-radius: 6px; overflow:hidden; width:100%; }
+  .stackbar .seg{ height:100%; position:relative; }
+  .stackbar-legend{ display:flex; flex-direction:column; gap:10px; margin-top:18px; }
+  .stackbar-legend-row{ display:flex; align-items:flex-start; gap:10px; font-size:13px; }
+  .stackbar-legend-row .dot{ width:11px; height:11px; border-radius:3px; margin-top:3px; flex:none; }
+  .stackbar-legend-row .t{ font-weight:700; color:var(--text-primary); }
+  .stackbar-legend-row .s{ color:var(--text-secondary); font-size:12.5px; }
+  .stackbar-legend-row .pct{ font-weight:700; margin-left:auto; padding-left: 10px; white-space:nowrap; }
+
+  .note{ font-size: 12px; color: var(--text-muted); margin-top: 14px; border-top: 1px dashed var(--grid); padding-top: 10px; }
+
+  details.table-toggle{ margin-top: 14px; }
+  details.table-toggle summary{ cursor:pointer; font-size:12px; color: var(--series-blue); font-weight:600; list-style:none; }
+  details.table-toggle summary::-webkit-details-marker{ display:none; }
+  details.table-toggle summary::before{ content:"▸ "; }
+  details.table-toggle[open] summary::before{ content:"▾ "; }
+  table.datatable{ width:100%; border-collapse: collapse; margin-top:10px; font-size: 12px; }
+  table.datatable th, table.datatable td{ text-align:right; padding:5px 8px; border-bottom: 1px solid var(--grid); font-variant-numeric: tabular-nums; }
+  table.datatable th:first-child, table.datatable td:first-child{ text-align:left; }
+  table.datatable th{ color: var(--text-muted); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.03em; }
+
+  .tooltip{
+    position: fixed; pointer-events:none; background: var(--text-primary); color: var(--surface-1);
+    font-size: 12px; padding: 8px 10px; border-radius: 6px; max-width: 240px; z-index: 50;
+    opacity: 0; transition: opacity .1s; transform: translate(-50%, -110%);
+  }
+  .tooltip.show{ opacity: 1; }
+  .tooltip .tt-title{ font-weight:700; margin-bottom:2px; }
+
+  section.synthesis{ margin-top: 40px; background: var(--surface-1); border:1px solid var(--card-border); border-radius:12px; padding: 26px 28px; }
+  section.synthesis h2{ font-size: 20px; margin: 0 0 14px; }
+  section.synthesis ol{ margin: 0; padding-left: 20px; display:flex; flex-direction:column; gap: 12px; }
+  section.synthesis li{ font-size: 14.5px; color: var(--text-secondary); }
+  section.synthesis li b{ color: var(--text-primary); }
+
+  footer.src{ margin-top: 30px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--card-border); padding-top: 16px; }
+  footer.src p{ margin: 4px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <p class="eyebrow">Painel de Restos a Pagar · Execução Orçamentária Federal · Exercício 2026</p>
+    <h1>Mais da metade do dinheiro empenhado ainda não chegou a seu destino</h1>
+    <p class="lede">Dos R$ 989,6 bilhões inscritos em Restos a Pagar pela União, R$ 517,9 bilhões (52,3%) seguem pendentes de pagamento. Este painel investiga onde esse valor está represado — por idade da dívida, tipo de despesa, estágio de execução e órgão responsável — para localizar os principais gargalos de qualidade da execução orçamentária.</p>
+    <div class="question-box">
+      <b>Pergunta central</b>
+      Se mais da metade do valor inscrito ainda está pendente de pagamento, quais são os principais fatores de risco e gargalos que podem comprometer a qualidade da execução orçamentária federal?
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="card hero-figure-card">
+      <div class="figure-row">
+        <div class="hero-figure">52,3%</div>
+        <span class="status-chip chip-serious"><span class="dot" style="background:var(--status-serious)"></span>Acima do ponto de virada</span>
+      </div>
+      <h2>do valor inscrito em Restos a Pagar ainda espera pagamento</h2>
+      <p>De cada R$ 100 empenhados e não pagos no exercício, R$ 52,30 continuam represados no caixa da União — acima da metade do total inscrito, o limiar que define o alerta deste relatório.</p>
+      <div class="meter">
+        <div class="meter-track"><div class="meter-fill" style="width:52.3%"></div></div>
+        <div class="meter-labels"><span>0%</span><span>Metade do valor (50%)</span><span>100%</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="kpi-grid" id="kpiGrid">
+    <div class="kpi-tile">
+      <div class="label"><span class="swatch" style="background:var(--text-muted)"></span>Total inscrito em Restos a Pagar</div>
+      <div class="value">R$ 989,6 bi</div>
+      <div class="sub">Base de referência (100%)</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="label"><span class="swatch" style="background:var(--status-good)"></span>Já pago</div>
+      <div class="value">R$ 435,6 bi</div>
+      <div class="sub">44,0% do inscrito</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="label"><span class="swatch" style="background:var(--status-serious)"></span>Ainda a pagar</div>
+      <div class="value">R$ 517,9 bi</div>
+      <div class="sub">52,3% do inscrito</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="label"><span class="swatch" style="background:var(--text-muted)"></span>Cancelado</div>
+      <div class="value">R$ 36,0 bi</div>
+      <div class="sub">3,6% do inscrito</div>
+    </div></div>
+    </div>
+  </section>
+
+  <section class="charts">
+
+    <figure class="chart-card card" id="chartVintage">
+      <figcaption class="kicker">Idade da dívida · Ano de empenho (NE_CCOR)</figcaption>
+      <h3>Dívida que não prescreve: parte do que falta pagar já passou dos 10 anos de existência</h3>
+      <p class="deck">Percentual do valor inscrito em cada safra de empenho que ainda está a pagar. Empenhos de 2013 ou antes ainda carregam 90% de pendência — sinal de que parte do estoque não é atraso recente, e sim passivo crônico não resolvido.</p>
+      <div class="col-chart" id="vintageChart"><div class="bar-col" data-i="≤2013">
+      <div class="val">90%</div>
+      <div class="bar" style="height:90.39%; background:var(--status-critical)"></div>
+      <div class="cat">≤2013</div>
+    </div><div class="bar-col" data-i="2014">
+      <div class="val">86%</div>
+      <div class="bar" style="height:85.78%; background:var(--status-critical)"></div>
+      <div class="cat">2014</div>
+    </div><div class="bar-col" data-i="2015">
+      <div class="val">88%</div>
+      <div class="bar" style="height:88.4%; background:var(--status-critical)"></div>
+      <div class="cat">2015</div>
+    </div><div class="bar-col" data-i="2016">
+      <div class="val">88%</div>
+      <div class="bar" style="height:87.51%; background:var(--status-critical)"></div>
+      <div class="cat">2016</div>
+    </div><div class="bar-col" data-i="2017">
+      <div class="val">85%</div>
+      <div class="bar" style="height:84.96%; background:var(--status-critical)"></div>
+      <div class="cat">2017</div>
+    </div><div class="bar-col" data-i="2018">
+      <div class="val">83%</div>
+      <div class="bar" style="height:82.83%; background:var(--status-critical)"></div>
+      <div class="cat">2018</div>
+    </div><div class="bar-col" data-i="2019">
+      <div class="val">65%</div>
+      <div class="bar" style="height:64.68%; background:var(--status-serious)"></div>
+      <div class="cat">2019</div>
+    </div><div class="bar-col" data-i="2020">
+      <div class="val">55%</div>
+      <div class="bar" style="height:55.45%; background:var(--status-serious)"></div>
+      <div class="cat">2020</div>
+    </div><div class="bar-col" data-i="2021">
+      <div class="val">62%</div>
+      <div class="bar" style="height:62.29%; background:var(--status-serious)"></div>
+      <div class="cat">2021</div>
+    </div><div class="bar-col" data-i="2022">
+      <div class="val">53%</div>
+      <div class="bar" style="height:52.53%; background:var(--status-serious)"></div>
+      <div class="cat">2022</div>
+    </div><div class="bar-col" data-i="2023">
+      <div class="val">24%</div>
+      <div class="bar" style="height:23.64%; background:var(--status-good)"></div>
+      <div class="cat">2023</div>
+    </div><div class="bar-col" data-i="2024">
+      <div class="val">23%</div>
+      <div class="bar" style="height:22.51%; background:var(--status-good)"></div>
+      <div class="cat">2024</div>
+    </div><div class="bar-col" data-i="2025">
+      <div class="val">100%</div>
+      <div class="bar" style="height:100%; background:var(--status-critical)"></div>
+      <div class="cat">2025</div>
+    </div></div>
+      <div class="legend" id="vintageLegend"><span class="legend-item"><span class="dot" style="background:var(--status-good)"></span>Baixo risco (&lt;30% pendente)</span><span class="legend-item"><span class="dot" style="background:var(--status-serious)"></span>Grave (50–70% pendente)</span><span class="legend-item"><span class="dot" style="background:var(--status-critical)"></span>Crítico (&gt;70% pendente)</span></div>
+      <p class="note">Barra de 2025: pendência de 100% é esperada — é o empenho do próprio exercício, ainda em curso normal de pagamento; use como referência, não como alerta.</p>
+      <details class="table-toggle"><summary>Ver dados em tabela</summary><div id="vintageTable"><table class="datatable"><thead><tr><th>Ano de empenho</th><th>Inscrito</th><th>A pagar</th><th>% pendente</th></tr></thead><tbody><tr><td>≤2013</td><td>R$ 5,7 bi</td><td>R$ 5,2 bi</td><td>90,4%</td></tr><tr><td>2014</td><td>R$ 776,0 mi</td><td>R$ 665,7 mi</td><td>85,8%</td></tr><tr><td>2015</td><td>R$ 798,0 mi</td><td>R$ 705,5 mi</td><td>88,4%</td></tr><tr><td>2016</td><td>R$ 2,1 bi</td><td>R$ 1,9 bi</td><td>87,5%</td></tr><tr><td>2017</td><td>R$ 2,8 bi</td><td>R$ 2,4 bi</td><td>85,0%</td></tr><tr><td>2018</td><td>R$ 3,0 bi</td><td>R$ 2,5 bi</td><td>82,8%</td></tr><tr><td>2019</td><td>R$ 7,0 bi</td><td>R$ 4,5 bi</td><td>64,7%</td></tr><tr><td>2020</td><td>R$ 13,0 bi</td><td>R$ 7,2 bi</td><td>55,5%</td></tr><tr><td>2021</td><td>R$ 27,7 bi</td><td>R$ 17,3 bi</td><td>62,3%</td></tr><tr><td>2022</td><td>R$ 39,8 bi</td><td>R$ 20,9 bi</td><td>52,5%</td></tr><tr><td>2023</td><td>R$ 279,2 bi</td><td>R$ 66,0 bi</td><td>23,6%</td></tr><tr><td>2024</td><td>R$ 282,5 bi</td><td>R$ 63,6 bi</td><td>22,5%</td></tr><tr><td>2025</td><td>R$ 325,2 bi</td><td>R$ 325,2 bi</td><td>100,0%</td></tr></tbody></table></div></details>
+    </figure>
+
+    <figure class="chart-card card" id="chartGrupo">
+      <figcaption class="kicker">Tipo de despesa · Grupo de natureza (NADE)</figcaption>
+      <h3>Investimentos são o elo mais fraco: quase 70% do valor para obras e aquisições segue parado</h3>
+      <p class="deck">Enquanto Pessoal e Encargos tem 38,9% pendente — em geral apenas o calendário normal de pagamento —, Investimentos (69,9%) e Inversões Financeiras (81,0%) concentram o maior risco de descontinuidade de entregas físicas.</p>
+      <div class="hbar-chart" id="grupoChart"><div class="hbar-row" data-i="Inversões Financeiras">
+      <div class="name">Inversões Financeiras</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:21.060729668060592%; background:var(--status-critical)"></div></div>
+      <div class="val">81,0%</div>
+    </div><div class="hbar-row" data-i="Investimentos">
+      <div class="name">Investimentos</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:46.2111092345121%; background:var(--status-serious)"></div></div>
+      <div class="val">69,9%</div>
+    </div><div class="hbar-row" data-i="Juros e Encargos da Dívida">
+      <div class="name">Juros e Encargos da Dívida</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:2%; background:var(--status-serious)"></div></div>
+      <div class="val">58,3%</div>
+    </div><div class="hbar-row" data-i="Amortização da Dívida">
+      <div class="name">Amortização da Dívida</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:13.514373450557333%; background:var(--status-warning)"></div></div>
+      <div class="val">46,4%</div>
+    </div><div class="hbar-row" data-i="Outras Despesas Correntes">
+      <div class="name">Outras Despesas Correntes</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:100%; background:var(--status-warning)"></div></div>
+      <div class="val">41,2%</div>
+    </div><div class="hbar-row" data-i="Pessoal e Encargos Sociais">
+      <div class="name">Pessoal e Encargos Sociais</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:16.49108960081306%; background:var(--status-warning)"></div></div>
+      <div class="val">38,9%</div>
+    </div></div>
+      <div class="legend" id="grupoLegend"><span class="legend-item"><span class="dot" style="background:var(--status-warning)"></span>Atenção (30–50% pendente)</span><span class="legend-item"><span class="dot" style="background:var(--status-serious)"></span>Grave (50–70% pendente)</span><span class="legend-item"><span class="dot" style="background:var(--status-critical)"></span>Crítico (&gt;70% pendente)</span></div>
+      <details class="table-toggle"><summary>Ver dados em tabela</summary><div id="grupoTable"><table class="datatable"><thead><tr><th>Grupo de despesa</th><th>Inscrito</th><th>A pagar</th><th>% pendente</th></tr></thead><tbody><tr><td>Inversões Financeiras</td><td>R$ 105,6 bi</td><td>R$ 85,5 bi</td><td>81,0%</td></tr><tr><td>Investimentos</td><td>R$ 231,7 bi</td><td>R$ 161,9 bi</td><td>69,9%</td></tr><tr><td>Juros e Encargos da Dívida</td><td>R$ 394,8 mi</td><td>R$ 230,0 mi</td><td>58,3%</td></tr><tr><td>Amortização da Dívida</td><td>R$ 67,8 bi</td><td>R$ 31,5 bi</td><td>46,4%</td></tr><tr><td>Outras Despesas Correntes</td><td>R$ 501,4 bi</td><td>R$ 206,7 bi</td><td>41,2%</td></tr><tr><td>Pessoal e Encargos Sociais</td><td>R$ 82,7 bi</td><td>R$ 32,2 bi</td><td>38,9%</td></tr></tbody></table></div></details>
+    </figure>
+
+    <figure class="chart-card card" id="chartStage">
+      <figcaption class="kicker">Estágio de execução · Processados vs. não processados</figcaption>
+      <h3>3 em cada 4 reais pendentes ainda não tiveram a entrega ou o serviço confirmado</h3>
+      <p class="deck">Dos R$ 517,9 bi a pagar, 75,3% (R$ 390,2 bi) sequer foram liquidados — ou seja, a Administração ainda não atestou o recebimento do bem ou serviço. É o maior risco de qualidade da execução: dinheiro comprometido sem entrega verificada.</p>
+      <div class="stackbar-wrap">
+        <div class="stackbar" id="stageBar"><div class="seg" data-i="Verificado — só falta pagar" style="width:24.05968431806808%; background:var(--status-good)"></div><div style="width:2px;background:var(--surface-1)"></div><div class="seg" data-i="A liquidar — entrega ainda não confirmada" style="width:74.54031568193192%; background:var(--status-serious)"></div><div style="width:2px;background:var(--surface-1)"></div><div class="seg" data-i="Bloqueado / contingenciado" style="width:1.4%; background:var(--status-critical)"></div></div>
+      </div>
+      <div class="stackbar-legend" id="stageLegend">
+    <div class="stackbar-legend-row">
+      <span class="dot" style="background:var(--status-good)"></span>
+      <div>
+        <div class="t">Verificado — só falta pagar <span class="pct" style="color:var(--status-good)">24,3%</span></div>
+        <div class="s">Bem ou serviço já atestado (processado + não processado liquidado); pendência é só de fluxo de caixa. — R$ 125,9 bi</div>
+      </div>
+    </div>
+    <div class="stackbar-legend-row">
+      <span class="dot" style="background:var(--status-serious)"></span>
+      <div>
+        <div class="t">A liquidar — entrega ainda não confirmada <span class="pct" style="color:var(--status-serious)">75,3%</span></div>
+        <div class="s">Não processado ainda não liquidado: a Administração não atestou o recebimento do bem ou serviço. — R$ 390,2 bi</div>
+      </div>
+    </div>
+    <div class="stackbar-legend-row">
+      <span class="dot" style="background:var(--status-critical)"></span>
+      <div>
+        <div class="t">Bloqueado / contingenciado <span class="pct" style="color:var(--status-critical)">0,3%</span></div>
+        <div class="s">Saldo com pagamento suspenso administrativamente — sinal de restrição orçamentária ou pendência legal. — R$ 1,8 bi</div>
+      </div>
+    </div></div>
+      <details class="table-toggle"><summary>Ver dados em tabela</summary><div id="stageTable"><table class="datatable"><thead><tr><th>Estágio</th><th>Valor</th><th>% do total a pagar</th></tr></thead><tbody><tr><td>Verificado — só falta pagar</td><td>R$ 125,9 bi</td><td>24,3%</td></tr><tr><td>A liquidar — entrega ainda não confirmada</td><td>R$ 390,2 bi</td><td>75,3%</td></tr><tr><td>Bloqueado / contingenciado</td><td>R$ 1,8 bi</td><td>0,3%</td></tr></tbody></table></div></details>
+    </figure>
+
+    <figure class="chart-card card" id="chartOrgaos">
+      <figcaption class="kicker">Responsáveis · Órgão do orçamento</figcaption>
+      <h3>Risco concentrado: 8 ministérios respondem por 75% de todo o valor ainda a pagar</h3>
+      <p class="deck">De 49 órgãos com Restos a Pagar, apenas 8 concentram R$ 389,2 bi em pendências — a barra mostra o volume represado; o ponto colorido mostra o quão crítica é a proporção pendente dentro do próprio órgão.</p>
+      <div class="hbar-chart" id="orgaosChart"><div class="hbar-row" data-i="Presidência da República">
+      <div class="name">Presidência da República</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:35.7832246467958%; background:var(--series-blue)"></div></div>
+      <div class="val"><span class="pctdot"><span class="dot" style="background:var(--status-critical)"></span>95,8%</span></div>
+    </div><div class="hbar-row" data-i="Ministério das Cidades">
+      <div class="name">Ministério das Cidades</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:33.964044176831166%; background:var(--series-blue)"></div></div>
+      <div class="val"><span class="pctdot"><span class="dot" style="background:var(--status-critical)"></span>80,3%</span></div>
+    </div><div class="hbar-row" data-i="Integr. e Desenv. Regional">
+      <div class="name">Integr. e Desenv. Regional</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:65.09991950995004%; background:var(--series-blue)"></div></div>
+      <div class="val"><span class="pctdot"><span class="dot" style="background:var(--status-serious)"></span>65,5%</span></div>
+    </div><div class="hbar-row" data-i="Ministério da Saúde">
+      <div class="name">Ministério da Saúde</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:72.19344896316244%; background:var(--series-blue)"></div></div>
+      <div class="val"><span class="pctdot"><span class="dot" style="background:var(--status-serious)"></span>54,6%</span></div>
+    </div><div class="hbar-row" data-i="Ministério da Educação">
+      <div class="name">Ministério da Educação</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:70.42397777055982%; background:var(--series-blue)"></div></div>
+      <div class="val"><span class="pctdot"><span class="dot" style="background:var(--status-warning)"></span>49,5%</span></div>
+    </div><div class="hbar-row" data-i="Ministério da Fazenda">
+      <div class="name">Ministério da Fazenda</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:100%; background:var(--series-blue)"></div></div>
+      <div class="val"><span class="pctdot"><span class="dot" style="background:var(--status-warning)"></span>48,1%</span></div>
+    </div><div class="hbar-row" data-i="Ministério da Defesa">
+      <div class="name">Ministério da Defesa</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:27.01192680237118%; background:var(--series-blue)"></div></div>
+      <div class="val"><span class="pctdot"><span class="dot" style="background:var(--status-warning)"></span>44,0%</span></div>
+    </div><div class="hbar-row" data-i="Previdência Social">
+      <div class="name">Previdência Social</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:80.60977861288639%; background:var(--series-blue)"></div></div>
+      <div class="val"><span class="pctdot"><span class="dot" style="background:var(--status-warning)"></span>35,6%</span></div>
+    </div></div>
+      <div class="legend" id="orgaosLegend"><span class="legend-item"><span class="swatch" style="background:var(--series-blue)"></span>Comprimento da barra = valor a pagar (R$)</span><span class="legend-item"><span class="dot" style="background:var(--status-warning)"></span>Ponto = atenção (30–50% pendente)</span><span class="legend-item"><span class="dot" style="background:var(--status-serious)"></span>Ponto = grave (50–70% pendente)</span><span class="legend-item"><span class="dot" style="background:var(--status-critical)"></span>Ponto = crítico (&gt;70% pendente)</span></div>
+      <details class="table-toggle"><summary>Ver dados em tabela</summary><div id="orgaosTable"><table class="datatable"><thead><tr><th>Órgão</th><th>Inscrito</th><th>A pagar</th><th>% pendente</th></tr></thead><tbody><tr><td>Presidência da República</td><td>R$ 30,0 bi</td><td>R$ 28,7 bi</td><td>95,8%</td></tr><tr><td>Ministério das Cidades</td><td>R$ 33,9 bi</td><td>R$ 27,2 bi</td><td>80,3%</td></tr><tr><td>Integr. e Desenv. Regional</td><td>R$ 79,8 bi</td><td>R$ 52,2 bi</td><td>65,5%</td></tr><tr><td>Ministério da Saúde</td><td>R$ 106,1 bi</td><td>R$ 57,9 bi</td><td>54,6%</td></tr><tr><td>Ministério da Educação</td><td>R$ 114,1 bi</td><td>R$ 56,5 bi</td><td>49,5%</td></tr><tr><td>Ministério da Fazenda</td><td>R$ 166,7 bi</td><td>R$ 80,2 bi</td><td>48,1%</td></tr><tr><td>Ministério da Defesa</td><td>R$ 49,3 bi</td><td>R$ 21,7 bi</td><td>44,0%</td></tr><tr><td>Previdência Social</td><td>R$ 181,6 bi</td><td>R$ 64,7 bi</td><td>35,6%</td></tr></tbody></table></div></details>
+    </figure>
+
+  </section>
+
+  <section class="synthesis">
+    <h2>O que esses quatro cortes revelam sobre os gargalos da execução</h2>
+    <ol>
+      <li><b>Passivo crônico, não apenas atraso sazonal.</b> Empenhos de até duas décadas atrás (2013 ou antes) ainda carregam 90,4% de pendência. Isso indica obrigações que se arrastam ano após ano via reinscrição, sem solução — um risco de controle e prestação de contas, não apenas de fluxo de caixa.</li>
+      <li><b>Investimento é a categoria mais vulnerável a interrupção.</b> Investimentos (69,9%) e Inversões Financeiras (81,0%) pendem muito acima da média geral (52,3%). Como essas despesas financiam obras e aquisições, atrasos aqui se traduzem em entregas físicas incompletas — o tipo de gargalo que mais afeta a população.</li>
+      <li><b>A maior parte do valor pendente ainda não tem entrega comprovada.</b> 75,3% do saldo a pagar corresponde a Restos a Pagar não processados e ainda não liquidados — a fase em que o risco de cancelamento, superfaturamento ou não-entrega é mais alto, por faltar a verificação formal do bem ou serviço.</li>
+      <li><b>O risco está concentrado em poucas mãos.</b> Apenas 8 dos 49 órgãos respondem por 75% do valor pendente, com destaque para Presidência da República (95,8%) e Ministério das Cidades (80,3%) — órgãos que merecem monitoramento prioritário para não comprometer a execução do orçamento como um todo.</li>
+    </ol>
+  </section>
+
+  <footer class="src">
+    <p><b>Fonte dos dados:</b> Base "Restos a Pagar 2026" (RP_INSCRITOS_TOTAL, RP_A_PAGAR_TOTAL e correlatas), aba "Base Geral" — 67.456 registros de empenhos da União, consolidando Poder Executivo e demais Poderes. Valores em R$ 1,00, agregados por dimensão.</p>
+    <p><b>Metodologia:</b> "% a pagar" = RP_A_PAGAR_TOTAL ÷ RP_INSCRITOS_TOTAL de cada corte. Faixas de risco (bom / atenção / grave / crítico) seguem os limiares 30% / 50% / 70% aplicados de forma consistente em todo o painel, como recurso narrativo de cor.</p>
+    <p>Painel estático gerado a partir do arquivo enviado (dadosrelatoriorap2026.xlsx). Sem conexão a dados ao vivo.</p>
+  </footer>
+
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+/* ---------------- data ---------------- */
+const DATA = {
+  kpi: { inscrito: 989569836993.84, pago: 435647385137.94, a_pagar: 517923031323.91, cancelado: 35999420531.99 },
+  vintage: [
+    {label:"≤2013", full:"2013 ou antes", pct:90.39, inscrito:5727592711.48, apagar:5177399920.83},
+    {label:"2014", pct:85.78, inscrito:776039099.17, apagar:665694730.40},
+    {label:"2015", pct:88.40, inscrito:798002747.70, apagar:705472044.72},
+    {label:"2016", pct:87.51, inscrito:2137217596.87, apagar:1870252022.12},
+    {label:"2017", pct:84.96, inscrito:2782998066.02, apagar:2364330219.74},
+    {label:"2018", pct:82.83, inscrito:2976894466.30, apagar:2465856148.29},
+    {label:"2019", pct:64.68, inscrito:7003075222.37, apagar:4529768425.23},
+    {label:"2020", pct:55.45, inscrito:12991131683.11, apagar:7203123822.30},
+    {label:"2021", pct:62.29, inscrito:27737620155.08, apagar:17278082699.96},
+    {label:"2022", pct:52.53, inscrito:39819210951.04, apagar:20918605447.40},
+    {label:"2023", pct:23.64, inscrito:279174046262.69, apagar:65998491120.03},
+    {label:"2024", pct:22.51, inscrito:282493293627.96, apagar:63593240318.85},
+    {label:"2025", pct:100.00, inscrito:325152714404.04, apagar:325152714404.04, note:"recém-inscrito"},
+  ],
+  grupo: [
+    {label:"Inversões Financeiras", pct:80.98, inscrito:105601345400.82, apagar:85515676996.64},
+    {label:"Investimentos", pct:69.86, inscrito:231708748203.03, apagar:161864837252.77},
+    {label:"Juros e Encargos da Dívida", pct:58.26, inscrito:394778402.49, apagar:230005574.29},
+    {label:"Amortização da Dívida", pct:46.43, inscrito:67762895261.52, apagar:31461976578.24},
+    {label:"Outras Despesas Correntes", pct:41.22, inscrito:501413517314.97, apagar:206695833647.09},
+    {label:"Pessoal e Encargos Sociais", pct:38.89, inscrito:82688552411.00, apagar:32154701274.88},
+  ],
+  stage: [
+    {label:"Verificado — só falta pagar", desc:"Bem ou serviço já atestado (processado + não processado liquidado); pendência é só de fluxo de caixa.", value:125940315724.75, status:"good"},
+    {label:"A liquidar — entrega ainda não confirmada", desc:"Não processado ainda não liquidado: a Administração não atestou o recebimento do bem ou serviço.", value:390180966927.95, status:"serious"},
+    {label:"Bloqueado / contingenciado", desc:"Saldo com pagamento suspenso administrativamente — sinal de restrição orçamentária ou pendência legal.", value:1801748671.21, status:"critical"},
+  ],
+  orgaos: [
+    {label:"Presidência da República", pct:95.81, inscrito:29962467032.97, apagar:28708103489.10},
+    {label:"Ministério das Cidades", pct:80.31, inscrito:33928405501.51, apagar:27248614532.68},
+    {label:"Integr. e Desenv. Regional", pct:65.45, inscrito:79798727297.61, apagar:52228250664.13},
+    {label:"Ministério da Saúde", pct:54.60, inscrito:106082901044.15, apagar:57919235187.07},
+    {label:"Ministério da Educação", pct:49.52, inscrito:114101601464.11, apagar:56499626903.59},
+    {label:"Ministério da Fazenda", pct:48.11, inscrito:166746735951.18, apagar:80227826788.86},
+    {label:"Ministério da Defesa", pct:43.99, inscrito:49269248654.01, apagar:21671081847.34},
+    {label:"Previdência Social", pct:35.61, inscrito:181627901366.88, apagar:64671473560.43},
+  ],
+};
+
+const STATUS = {
+  good:     { color:"var(--status-good)",     label:"Baixo risco (<30% pendente)",  chip:"chip-good"     },
+  warning:  { color:"var(--status-warning)",  label:"Atenção (30–50% pendente)",    chip:"chip-warning"  },
+  serious:  { color:"var(--status-serious)",  label:"Grave (50–70% pendente)",      chip:"chip-serious"  },
+  critical: { color:"var(--status-critical)", label:"Crítico (>70% pendente)",      chip:"chip-critical" },
+};
+function band(pct){
+  if (pct < 30) return "good";
+  if (pct < 50) return "warning";
+  if (pct < 70) return "serious";
+  return "critical";
+}
+function fmtBRL(v, compact){
+  if (compact){
+    if (Math.abs(v) >= 1e9) return "R$ " + (v/1e9).toLocaleString('pt-BR',{maximumFractionDigits:1,minimumFractionDigits:1}) + " bi";
+    if (Math.abs(v) >= 1e6) return "R$ " + (v/1e6).toLocaleString('pt-BR',{maximumFractionDigits:1,minimumFractionDigits:1}) + " mi";
+    return "R$ " + v.toLocaleString('pt-BR',{maximumFractionDigits:0});
+  }
+  return "R$ " + v.toLocaleString('pt-BR',{maximumFractionDigits:0});
+}
+function fmtPct(v){ return v.toLocaleString('pt-BR',{maximumFractionDigits:1,minimumFractionDigits:1}) + "%"; }
+function pt1(v){ return v.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}); }
+function pt0(v){ return v.toLocaleString('pt-BR',{maximumFractionDigits:0}); }
+
+/* ---------------- tooltip ---------------- */
+const tooltipEl = document.getElementById('tooltip');
+function showTooltip(evt, title, lines){
+  tooltipEl.innerHTML = '<div class="tt-title">'+title+'</div>' + lines.map(l=>'<div>'+l+'</div>').join('');
+  tooltipEl.classList.add('show');
+  moveTooltip(evt);
+}
+function moveTooltip(evt){
+  tooltipEl.style.left = evt.clientX + 'px';
+  tooltipEl.style.top = evt.clientY + 'px';
+}
+function hideTooltip(){ tooltipEl.classList.remove('show'); }
+
+/* ---------------- KPI tiles ---------------- */
+(function renderKPI(){
+  const tiles = [
+    {label:"Total inscrito em Restos a Pagar", value: DATA.kpi.inscrito, color:"var(--text-muted)", sub:"Base de referência (100%)"},
+    {label:"Já pago", value: DATA.kpi.pago, color:"var(--status-good)", sub: fmtPct(DATA.kpi.pago/DATA.kpi.inscrito*100)+" do inscrito"},
+    {label:"Ainda a pagar", value: DATA.kpi.a_pagar, color:"var(--status-serious)", sub: fmtPct(DATA.kpi.a_pagar/DATA.kpi.inscrito*100)+" do inscrito"},
+    {label:"Cancelado", value: DATA.kpi.cancelado, color:"var(--text-muted)", sub: fmtPct(DATA.kpi.cancelado/DATA.kpi.inscrito*100)+" do inscrito"},
+  ];
+  const grid = document.getElementById('kpiGrid');
+  grid.innerHTML = tiles.map(t=>`
+    <div class="kpi-tile">
+      <div class="label"><span class="swatch" style="background:${t.color}"></span>${t.label}</div>
+      <div class="value">${fmtBRL(t.value, true)}</div>
+      <div class="sub">${t.sub}</div>
+    </div>`).join('');
+})();
+
+/* ---------------- Vintage column chart ---------------- */
+(function renderVintage(){
+  const el = document.getElementById('vintageChart');
+  const max = 100;
+  el.innerHTML = DATA.vintage.map(d=>{
+    const b = band(d.pct);
+    const h = Math.max(d.pct/max*100, 2);
+    return `<div class="bar-col" data-i="${d.label}">
+      <div class="val">${pt0(d.pct)}%</div>
+      <div class="bar" style="height:${h}%; background:${STATUS[b].color}"></div>
+      <div class="cat">${d.label}</div>
+    </div>`;
+  }).join('');
+  el.querySelectorAll('.bar-col').forEach((node,i)=>{
+    const d = DATA.vintage[i];
+    node.addEventListener('mouseenter', (e)=>{
+      showTooltip(e, "Empenhado em "+(d.full||d.label), [
+        "Inscrito: "+fmtBRL(d.inscrito, true),
+        "A pagar: "+fmtBRL(d.apagar, true)+" ("+pt1(d.pct)+"%)",
+        d.note ? "⚠ "+d.note : ""
+      ].filter(Boolean));
+    });
+    node.addEventListener('mousemove', moveTooltip);
+    node.addEventListener('mouseleave', hideTooltip);
+  });
+  renderStatusLegend('vintageLegend', ["warning","serious","critical"].filter(k=>DATA.vintage.some(d=>band(d.pct)===k)).length ? uniqueBandsIn(DATA.vintage) : []);
+  renderVintageTable();
+})();
+function uniqueBandsIn(arr){
+  const set = new Set(arr.map(d=>band(d.pct)));
+  return ["good","warning","serious","critical"].filter(k=>set.has(k));
+}
+function renderStatusLegend(elId, bands){
+  const el = document.getElementById(elId);
+  el.innerHTML = bands.map(k=>`<span class="legend-item"><span class="dot" style="background:${STATUS[k].color}"></span>${STATUS[k].label}</span>`).join('');
+}
+function renderVintageTable(){
+  const el = document.getElementById('vintageTable');
+  el.innerHTML = `<table class="datatable"><thead><tr><th>Ano de empenho</th><th>Inscrito</th><th>A pagar</th><th>% pendente</th></tr></thead><tbody>` +
+    DATA.vintage.map(d=>`<tr><td>${d.label}</td><td>${fmtBRL(d.inscrito,true)}</td><td>${fmtBRL(d.apagar,true)}</td><td>${pt1(d.pct)}%</td></tr>`).join('') +
+    `</tbody></table>`;
+}
+
+/* ---------------- Grupo horizontal bar ---------------- */
+(function renderGrupo(){
+  const el = document.getElementById('grupoChart');
+  const max = Math.max(...DATA.grupo.map(d=>d.inscrito));
+  el.innerHTML = DATA.grupo.map(d=>{
+    const b = band(d.pct);
+    const w = Math.max(d.inscrito/max*100, 2);
+    return `<div class="hbar-row" data-i="${d.label}">
+      <div class="name">${d.label}</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:${w}%; background:${STATUS[b].color}"></div></div>
+      <div class="val">${fmtPct(d.pct)}</div>
+    </div>`;
+  }).join('');
+  el.querySelectorAll('.hbar-row').forEach((node,i)=>{
+    const d = DATA.grupo[i];
+    node.addEventListener('mouseenter', (e)=> showTooltip(e, d.label, [
+      "Inscrito: "+fmtBRL(d.inscrito, true),
+      "A pagar: "+fmtBRL(d.apagar, true)+" ("+pt1(d.pct)+"%)",
+    ]));
+    node.addEventListener('mousemove', moveTooltip);
+    node.addEventListener('mouseleave', hideTooltip);
+  });
+  renderStatusLegend('grupoLegend', uniqueBandsIn(DATA.grupo));
+  const t = document.getElementById('grupoTable');
+  t.innerHTML = `<table class="datatable"><thead><tr><th>Grupo de despesa</th><th>Inscrito</th><th>A pagar</th><th>% pendente</th></tr></thead><tbody>` +
+    DATA.grupo.map(d=>`<tr><td>${d.label}</td><td>${fmtBRL(d.inscrito,true)}</td><td>${fmtBRL(d.apagar,true)}</td><td>${pt1(d.pct)}%</td></tr>`).join('') +
+    `</tbody></table>`;
+})();
+
+/* ---------------- Stage stacked bar ---------------- */
+(function renderStage(){
+  const total = DATA.stage.reduce((s,d)=>s+d.value,0);
+  const bar = document.getElementById('stageBar');
+  // Segments below ~1% are floored to a visible minimum width so the sliver
+  // stays perceptible; real proportions are always shown in the tooltip,
+  // legend and table, so the visual floor never misstates the data read.
+  const MIN_PCT = 1.4;
+  const rawPct = DATA.stage.map(d=> d.value/total*100);
+  const flooredExtra = rawPct.reduce((s,p)=> s + Math.max(0, MIN_PCT-p), 0);
+  const donorPool = rawPct.reduce((s,p)=> s + (p>MIN_PCT? p:0), 0);
+  const drawPct = rawPct.map(p=> p<MIN_PCT ? MIN_PCT : p - (p/donorPool)*flooredExtra);
+  bar.innerHTML = DATA.stage.map((d,i)=>{
+    return `<div class="seg" data-i="${d.label}" style="width:${drawPct[i]}%; background:${STATUS[d.status].color}"></div>`;
+  }).join('<div style="width:2px;background:var(--surface-1)"></div>');
+  bar.querySelectorAll('.seg').forEach((node,i)=>{
+    const d = DATA.stage[i];
+    node.addEventListener('mouseenter', (e)=> showTooltip(e, d.label, [
+      fmtBRL(d.value, true) + " ("+pt1(d.value/total*100)+"%)",
+      d.desc
+    ]));
+    node.addEventListener('mousemove', moveTooltip);
+    node.addEventListener('mouseleave', hideTooltip);
+  });
+  const legend = document.getElementById('stageLegend');
+  legend.innerHTML = DATA.stage.map(d=>`
+    <div class="stackbar-legend-row">
+      <span class="dot" style="background:${STATUS[d.status].color}"></span>
+      <div>
+        <div class="t">${d.label} <span class="pct" style="color:${STATUS[d.status].color}">${pt1(d.value/total*100)}%</span></div>
+        <div class="s">${d.desc} — ${fmtBRL(d.value, true)}</div>
+      </div>
+    </div>`).join('');
+  const t = document.getElementById('stageTable');
+  t.innerHTML = `<table class="datatable"><thead><tr><th>Estágio</th><th>Valor</th><th>% do total a pagar</th></tr></thead><tbody>` +
+    DATA.stage.map(d=>`<tr><td>${d.label}</td><td>${fmtBRL(d.value,true)}</td><td>${pt1(d.value/total*100)}%</td></tr>`).join('') +
+    `</tbody></table>`;
+})();
+
+/* ---------------- Orgaos horizontal bar (dual encode) ---------------- */
+(function renderOrgaos(){
+  const el = document.getElementById('orgaosChart');
+  const max = Math.max(...DATA.orgaos.map(d=>d.apagar));
+  el.innerHTML = DATA.orgaos.map(d=>{
+    const b = band(d.pct);
+    const w = Math.max(d.apagar/max*100, 2);
+    return `<div class="hbar-row" data-i="${d.label}">
+      <div class="name">${d.label}</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:${w}%; background:var(--series-blue)"></div></div>
+      <div class="val"><span class="pctdot"><span class="dot" style="background:${STATUS[b].color}"></span>${fmtPct(d.pct)}</span></div>
+    </div>`;
+  }).join('');
+  el.querySelectorAll('.hbar-row').forEach((node,i)=>{
+    const d = DATA.orgaos[i];
+    node.addEventListener('mouseenter', (e)=> showTooltip(e, d.label, [
+      "A pagar: "+fmtBRL(d.apagar, true),
+      "Inscrito: "+fmtBRL(d.inscrito, true),
+      "% pendente no órgão: "+pt1(d.pct)+"%",
+    ]));
+    node.addEventListener('mousemove', moveTooltip);
+    node.addEventListener('mouseleave', hideTooltip);
+  });
+  const legend = document.getElementById('orgaosLegend');
+  legend.innerHTML = `<span class="legend-item"><span class="swatch" style="background:var(--series-blue)"></span>Comprimento da barra = valor a pagar (R$)</span>` +
+    uniqueBandsIn(DATA.orgaos).map(k=>`<span class="legend-item"><span class="dot" style="background:${STATUS[k].color}"></span>Ponto = ${STATUS[k].label.toLowerCase()}</span>`).join('');
+  const t = document.getElementById('orgaosTable');
+  t.innerHTML = `<table class="datatable"><thead><tr><th>Órgão</th><th>Inscrito</th><th>A pagar</th><th>% pendente</th></tr></thead><tbody>` +
+    DATA.orgaos.map(d=>`<tr><td>${d.label}</td><td>${fmtBRL(d.inscrito,true)}</td><td>${fmtBRL(d.apagar,true)}</td><td>${pt1(d.pct)}%</td></tr>`).join('') +
+    `</tbody></table>`;
+})();
+</script>
+
+
+</body></html>
