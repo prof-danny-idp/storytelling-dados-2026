@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Endividamento das famílias brasileiras — a dívida cresceu onde custa mais caro</title>
+<meta name="description" content="Storytelling com dados do Banco Central: o endividamento das famílias triplicou em 20 anos e avançou justamente nas duas linhas de crédito mais caras.">
+<style>
+/* ---------- Design tokens ---------- */
+:root{
+  --bg:#FAFAF9;
+  --surface:#FFFFFF;
+  --ink:#171717;
+  --ink-2:#525252;
+  --ink-3:#78716C;
+  --rule:#E7E5E4;
+  --rule-2:#D6D3D1;
+  --accent:#D97706;        /* marcas e texto grande (3,1:1) */
+  --accent-ink:#B45309;    /* texto pequeno (4,9:1) */
+  --accent-wash:#FDF6EC;
+  --maxw:46rem;
+  --figw:74rem;
+  --serif:"Iowan Old Style","Charter","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --pad:clamp(1.25rem,5vw,2.5rem);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0;
+  overflow-wrap:break-word;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:clamp(1rem,0.96rem + 0.2vw,1.0625rem);
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img{max-width:100%;height:auto;display:block}
+a{color:var(--accent-ink)}
+
+/* ---------- Barra de progresso ---------- */
+.progress{
+  position:fixed;inset:0 auto auto 0;width:100%;height:3px;z-index:50;
+  background:transparent;pointer-events:none;
+}
+.progress__bar{
+  height:100%;width:0;background:var(--accent);
+  transform-origin:0 50%;transition:width .1s linear;
+}
+
+/* ---------- Layout ---------- */
+.wrap{width:min(100% - 2*var(--pad),var(--maxw));margin-inline:auto}
+.wrap--wide{width:min(100% - 2*var(--pad),var(--figw))}
+section{position:relative}
+
+/* ---------- Hero ---------- */
+.hero{padding:clamp(3.5rem,10vw,7rem) 0 clamp(2rem,5vw,3rem)}
+.kicker{
+  font-size:.72rem;font-weight:650;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent-ink);margin:0 0 1.25rem;
+  display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;
+}
+.kicker::before{content:"";width:1.75rem;height:2px;background:var(--accent);flex:none}
+.hero h1{
+  font-family:var(--serif);font-weight:600;
+  font-size:clamp(2.1rem,1.2rem + 4.4vw,4.1rem);
+  line-height:1.04;letter-spacing:-.02em;margin:0 0 1.4rem;text-wrap:balance;
+}
+.hero h1 em{font-style:normal;color:var(--accent);}
+.standfirst{
+  font-size:clamp(1.075rem,1rem + 0.45vw,1.3rem);
+  line-height:1.55;color:var(--ink-2);margin:0 0 2rem;max-width:34em;
+}
+.byline{
+  display:flex;gap:.5rem 1.5rem;flex-wrap:wrap;
+  font-size:.82rem;color:var(--ink-3);
+  padding-top:1.25rem;border-top:1px solid var(--rule);
+}
+.byline strong{color:var(--ink-2);font-weight:600}
+
+/* ---------- Stat tiles ---------- */
+.stats{
+  display:grid;gap:1px;background:var(--rule);
+  border:1px solid var(--rule);border-radius:12px;overflow:hidden;
+  margin:clamp(2rem,5vw,3.25rem) 0 clamp(3rem,8vw,5rem);
+}
+@media (min-width:44rem){.stats{grid-template-columns:repeat(3,1fr)}}
+.stat{background:var(--surface);padding:clamp(1.25rem,3vw,1.75rem)}
+.stat__label{
+  font-size:.7rem;font-weight:650;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 .75rem;
+}
+@media (min-width:44rem){
+  .stat__label{min-height:2.4em}  /* alinha os três valores na mesma linha de base */
+}
+.stat__value{
+  font-family:var(--sans);font-weight:700;
+  font-size:clamp(1.95rem,1.4rem + 1.9vw,2.6rem);
+  line-height:1;letter-spacing:-.025em;color:var(--ink);
+  font-variant-numeric:tabular-nums;margin:0;
+  display:flex;align-items:baseline;gap:.45rem;
+}
+.stat__value::before{
+  content:"";width:.5rem;height:.5rem;border-radius:50%;
+  background:var(--accent);flex:none;transform:translateY(-.35em);
+}
+.stat__note{margin:.7rem 0 0;font-size:.85rem;line-height:1.5;color:var(--ink-2)}
+
+/* ---------- Capítulos ---------- */
+.chapter{padding:clamp(2.5rem,7vw,4.5rem) 0;border-top:1px solid var(--rule)}
+.chapter:first-of-type{border-top:0}
+.chapter__eyebrow{
+  display:flex;align-items:baseline;gap:.75rem;
+  font-size:.72rem;font-weight:650;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 1rem;
+}
+.chapter__num{
+  font-variant-numeric:tabular-nums;color:var(--accent-ink);
+  font-size:.95rem;letter-spacing:.02em;
+}
+.chapter h2{
+  font-family:var(--serif);font-weight:600;
+  font-size:clamp(1.6rem,1.15rem + 2.1vw,2.5rem);
+  line-height:1.14;letter-spacing:-.015em;margin:0 0 1rem;text-wrap:balance;
+}
+.chapter p{margin:0 0 1.1rem;color:var(--ink-2);max-width:36em}
+.chapter p strong{color:var(--ink);font-weight:600}
+.chapter p:last-of-type{margin-bottom:0}
+
+/* ---------- Figura ---------- */
+.figure{margin:clamp(1.75rem,4vw,2.5rem) 0 0}
+.figure__frame{
+  display:block;background:var(--surface);
+  border:1px solid var(--rule);border-radius:12px;padding:clamp(.5rem,1.5vw,.9rem);
+  box-shadow:0 1px 2px rgba(23,23,23,.04),0 14px 32px -22px rgba(23,23,23,.28);
+  transition:box-shadow .2s ease,border-color .2s ease;
+  position:relative;
+}
+a.figure__frame:hover,a.figure__frame:focus-visible{
+  border-color:var(--rule-2);
+  box-shadow:0 1px 2px rgba(23,23,23,.05),0 18px 40px -20px rgba(23,23,23,.35);
+}
+a.figure__frame:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.figure__frame img{border-radius:5px}
+.figure__zoom{
+  position:absolute;right:1rem;bottom:1rem;
+  font-size:.68rem;font-weight:650;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-3);background:var(--bg);border:1px solid var(--rule);
+  padding:.3rem .55rem;border-radius:99px;opacity:0;transition:opacity .2s ease;
+}
+a.figure__frame:hover .figure__zoom,a.figure__frame:focus-visible .figure__zoom{opacity:1}
+.figure figcaption{
+  margin:.9rem 0 0;font-size:.85rem;line-height:1.55;color:var(--ink-3);
+  padding-left:.9rem;border-left:2px solid var(--accent);max-width:52em;
+}
+.figure figcaption b{color:var(--ink-2);font-weight:600}
+
+/* ---------- Virada ---------- */
+.turn{
+  background:var(--accent-wash);border-block:1px solid #F3E3CB;
+  padding:clamp(3rem,9vw,5.5rem) 0;margin:clamp(2rem,6vw,3.5rem) 0 0;
+}
+.turn p{
+  font-family:var(--serif);font-weight:600;
+  font-size:clamp(1.5rem,1.05rem + 2.2vw,2.4rem);
+  line-height:1.22;letter-spacing:-.015em;color:var(--ink);
+  margin:0;max-width:22ch;text-wrap:balance;
+}
+.turn span{color:var(--accent)}
+p.turn__small{
+  font-family:var(--sans);font-size:.95rem;font-weight:400;line-height:1.6;
+  color:var(--ink-2);margin:1.5rem 0 0;max-width:38em;letter-spacing:0;
+}
+
+/* ---------- Ranking ---------- */
+.ladder-section{padding:clamp(3rem,8vw,5rem) 0;border-top:1px solid var(--rule)}
+.ladder{display:grid;gap:1.5rem;margin:2rem 0 0}
+@media (min-width:48rem){.ladder{grid-template-columns:1fr 1fr;gap:1.75rem}}
+.ladder__col{
+  background:var(--surface);border:1px solid var(--rule);border-radius:12px;
+  padding:clamp(1.1rem,3vw,1.6rem);
+}
+.ladder__col h3{
+  font-family:var(--sans);font-size:.72rem;font-weight:650;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);margin:0 0 .3rem;
+}
+.ladder__sub{font-size:.82rem;color:var(--ink-3);margin:0 0 1.1rem}
+.ladder ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.ladder li{
+  display:grid;grid-template-columns:1.6rem 1fr auto;align-items:center;gap:.75rem;
+  padding:.7rem .75rem;border-radius:8px;background:var(--bg);
+  font-size:.95rem;color:var(--ink-3);
+}
+.ladder li .pos{
+  font-variant-numeric:tabular-nums;font-size:.8rem;font-weight:650;
+  color:var(--ink-3);text-align:center;
+}
+.ladder li .val{font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink-2)}
+.ladder li.is-key{
+  background:var(--accent-wash);color:var(--ink);font-weight:600;
+  box-shadow:inset 3px 0 0 var(--accent);
+}
+.ladder li.is-key .pos{
+  background:var(--accent);color:#fff;border-radius:50%;
+  width:1.5rem;height:1.5rem;line-height:1.5rem;
+}
+.ladder li.is-key .val{color:var(--accent-ink);font-weight:700}
+.ladder__note{
+  margin:1.5rem 0 0;font-size:.95rem;color:var(--ink-2);
+  padding-left:.9rem;border-left:2px solid var(--accent);max-width:44em;
+}
+
+/* ---------- Conclusão ---------- */
+.close{padding:clamp(3.5rem,9vw,6rem) 0;border-top:1px solid var(--rule)}
+.close blockquote{
+  margin:0;font-family:var(--serif);font-weight:500;
+  font-size:clamp(1.35rem,1.05rem + 1.5vw,2rem);line-height:1.34;
+  letter-spacing:-.012em;color:var(--ink);max-width:26ch;text-wrap:balance;
+}
+.close blockquote strong{font-weight:700;color:var(--accent)}
+.close__body{margin:2rem 0 0;max-width:36em;color:var(--ink-2)}
+.close__body p{margin:0 0 1.1rem}
+.close__body p:last-child{margin:0}
+
+/* ---------- Rodapé ---------- */
+.foot{
+  border-top:1px solid var(--rule);background:var(--surface);
+  padding:clamp(2.5rem,6vw,3.5rem) 0;font-size:.85rem;color:var(--ink-3);line-height:1.6;
+}
+.foot h2{
+  font-family:var(--sans);font-size:.72rem;font-weight:650;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-2);margin:0 0 1rem;
+}
+.foot dl{display:grid;gap:.85rem 2rem;margin:0}
+@media (min-width:44rem){.foot dl{grid-template-columns:minmax(0,auto) minmax(0,1fr)}}
+.foot dt{font-weight:650;color:var(--ink-2);min-width:0}
+.foot dd{margin:0;min-width:0}
+.foot code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:.9em;background:var(--bg);border:1px solid var(--rule);
+  padding:.1rem .35rem;border-radius:4px;
+  overflow-wrap:anywhere;   /* nome de arquivo longo não estoura o grid em telas estreitas */
+}
+
+/* ---------- Reveal ---------- */
+.has-js .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+.has-js .reveal.is-in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .has-js .reveal{opacity:1;transform:none;transition:none}
+  .progress__bar{transition:none}
+}
+
+/* ---------- Impressão ---------- */
+@media print{
+  .progress{display:none}
+  body{background:#fff;font-size:11pt}
+  .chapter,.ladder-section,.close{break-inside:avoid;page-break-inside:avoid}
+  .figure__frame{box-shadow:none;border-color:#ccc}
+  .figure__zoom{display:none}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<div class="progress" aria-hidden="true"><div class="progress__bar" id="progressBar"></div></div>
+
+<!-- ============ ABERTURA ============ -->
+<header class="hero">
+  <div class="wrap">
+    <h1>Endividamento das <em> famílias brasileiras no SFN</em></h1>
+    <p class="standfirst">
+      Em pouco mais de 20 anos, o endividamento triplicou. Mas o número agregado esconde o essencial:
+      as duas modalidades que mais cresceram são exatamente as duas mais caras do mercado.
+    </p>
+  </div>
+</header>
+
+<!-- ============ NÚMEROS-CHAVE ============ -->
+<section class="wrap" aria-label="Números-chave">
+  <div class="stats reveal">
+    <div class="stat">
+      <p class="stat__label">Endividamento das famílias</p>
+      <p class="stat__value">49,8%</p>
+      <p class="stat__note">da renda acumulada de 12 meses está comprometida com dívidas. Em 2005, eram 16,5%.</p>
+    </div>
+    <div class="stat">
+      <p class="stat__label">A que mais cresceu</p>
+      <p class="stat__value">+321%</p>
+      <p class="stat__note">de crescimento do saldo do cartão de crédito desde dezembro de 2015.</p>
+    </div>
+    <div class="stat">
+      <p class="stat__label">A que custa mais caro</p>
+      <p class="stat__value">442,4%</p>
+      <p class="stat__note">ao ano é a taxa média do cartão de crédito rotativo em novas operações.</p>
+    </div>
+  </div>
+</section>
+
+<main>
+<!-- ============ CAPÍTULO 1 ============ -->
+<article class="chapter wrap reveal">
+  <p class="chapter__eyebrow"><span class="chapter__num">01</span> O tamanho do problema</p>
+  <figure class="figure">
+    <a class="figure__frame" href="dashboard_endividamento/01_endividamento.png" target="_blank" rel="noopener">
+      <img src="dashboard_endividamento/01_endividamento.png" width="1850" height="984"
+           alt="Gráfico de linha do endividamento das famílias em relação à renda anual, subindo de 16,5% em 2005 para 49,8% em 2026.">
+      <span class="figure__zoom">Ampliar</span>
+    </a>
+  </figure>
+</article>
+
+<!-- ============ CAPÍTULO 2 ============ -->
+<article class="chapter wrap reveal">
+  <p class="chapter__eyebrow"><span class="chapter__num">02</span> Mas nem toda dívida é igual</p>
+  <figure class="figure">
+    <a class="figure__frame" href="dashboard_endividamento/02_habitacional_endividamento.png" target="_blank" rel="noopener">
+      <img src="dashboard_endividamento/02_habitacional_endividamento.png" width="2085" height="1018" loading="lazy" decoding="async"
+           alt="Gráfico de área empilhada separando a parcela do endividamento associada ao crédito habitacional do restante.">
+      <span class="figure__zoom">Ampliar</span>
+    </a>
+  </figure>
+</article>
+
+<!-- ============ CAPÍTULO 3 ============ -->
+<article class="chapter wrap reveal">
+  <p class="chapter__eyebrow"><span class="chapter__num">03</span> Onde está o dinheiro</p>
+  <figure class="figure">
+    <a class="figure__frame" href="dashboard_endividamento/03_modalidades_saldo.png" target="_blank" rel="noopener">
+      <img src="dashboard_endividamento/03_modalidades_saldo.png" width="2090" height="984" loading="lazy" decoding="async"
+           alt="Gráfico de barras horizontais com o saldo de crédito por modalidade; financiamento imobiliário lidera com R$ 1.395 bilhões.">
+      <span class="figure__zoom">Ampliar</span>
+    </a>
+  </figure>
+</article>
+
+<!-- ============ CAPÍTULO 4 ============ -->
+<article class="chapter wrap reveal">
+  <p class="chapter__eyebrow"><span class="chapter__num">04</span> Quanto cada uma cresceu em reais</p>
+  <figure class="figure">
+    <a class="figure__frame" href="dashboard_endividamento/04_aumento_nominal_modalidades.png" target="_blank" rel="noopener">
+      <img src="dashboard_endividamento/04_aumento_nominal_modalidades.png" width="1769" height="1018" loading="lazy" decoding="async"
+           alt="Gráfico de barras comparando o saldo de cada modalidade em 2015 e em 2026, com a diferença indicada no nome de cada modalidade.">
+      <span class="figure__zoom">Ampliar</span>
+    </a>
+  </figure>
+</article>
+</main>
+
+
+<main>
+<!-- ============ CAPÍTULO 5 ============ -->
+<article class="chapter wrap reveal">
+  <p class="chapter__eyebrow"><span class="chapter__num">05</span> Quem realmente ganhou espaço</p>
+  <figure class="figure">
+    <a class="figure__frame" href="dashboard_endividamento/05_evolucao_relativa_modalidades.png" target="_blank" rel="noopener">
+      <img src="dashboard_endividamento/05_evolucao_relativa_modalidades.png" width="2100" height="1034" loading="lazy" decoding="async"
+           alt="Gráfico de linhas com todas as modalidades indexadas em 100 em dezembro de 2015; cartão de crédito chega a 421 e crédito pessoal não consignado a 370.">
+      <span class="figure__zoom">Ampliar</span>
+    </a>
+  </figure>
+</article>
+
+<!-- ============ CAPÍTULO 6 ============ -->
+<article class="chapter wrap reveal">
+  <p class="chapter__eyebrow"><span class="chapter__num">06</span> Quanto custa cada dívida</p>
+  <figure class="figure">
+    <a class="figure__frame" href="dashboard_endividamento/06_juros_modalidades.png" target="_blank" rel="noopener">
+      <img src="dashboard_endividamento/06_juros_modalidades.png" width="1940" height="984" loading="lazy" decoding="async"
+           alt="Gráfico de barras horizontais com a taxa de juros anual por modalidade; cartão rotativo em 442,4% ao ano, muito acima das demais.">
+      <span class="figure__zoom">Ampliar</span>
+    </a>
+  </figure>
+</article>
+</main>
+
+<!-- ============ AS DUAS LISTAS ============ -->
+<section class="ladder-section wrap reveal" aria-labelledby="ladderTitle">
+  <p class="chapter__eyebrow"><span class="chapter__num">07</span> A coincidência que não é coincidência</p>
+  <h2 id="ladderTitle" style="font-family:var(--serif);font-weight:600;font-size:clamp(1.6rem,1.15rem + 2.1vw,2.5rem);line-height:1.14;letter-spacing:-.015em;margin:0 0 .5rem;">
+    Duas listas, as mesmas duas modalidades no topo
+  </h2>
+  <div class="ladder">
+    <div class="ladder__col">
+      <h3>Quem mais cresceu</h3>
+      <p class="ladder__sub">Variação do saldo · dez/2015 → jun/2026</p>
+      <ol>
+        <li class="is-key"><span class="pos">1</span><span class="name">Cartão de crédito</span><span class="val">+321%</span></li>
+        <li class="is-key"><span class="pos">2</span><span class="name">Crédito pessoal não consignado</span><span class="val">+270%</span></li>
+        <li><span class="pos">3</span><span class="name">Crédito consignado</span><span class="val">+189%</span></li>
+        <li><span class="pos">4</span><span class="name">Financiamento imobiliário</span><span class="val">+176%</span></li>
+        <li><span class="pos">5</span><span class="name">Financiamento de veículos</span><span class="val">+152%</span></li>
+      </ol>
+    </div>
+    <div class="ladder__col">
+      <h3>Quem cobra mais caro</h3>
+      <p class="ladder__sub">Taxa média de novas operações · jun/2026</p>
+      <ol>
+        <li class="is-key"><span class="pos">1</span><span class="name">Cartão de crédito rotativo</span><span class="val">442,4% a.a.</span></li>
+        <li class="is-key"><span class="pos">2</span><span class="name">Crédito pessoal não consignado</span><span class="val">127,3% a.a.</span></li>
+        <li><span class="pos">3</span><span class="name">Crédito consignado</span><span class="val">28,3% a.a.</span></li>
+        <li><span class="pos">4</span><span class="name">Financiamento de veículos</span><span class="val">26,4% a.a.</span></li>
+        <li><span class="pos">5</span><span class="name">Financiamento imobiliário</span><span class="val">11,2% a.a.</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONCLUSÃO ============ -->
+<section class="close wrap reveal">
+  <blockquote>
+    O endividamento não apenas aumentou: ele aumentou <strong>justamente nas duas linhas mais caras</strong>.
+  </blockquote>
+</section>
+
+<!-- ============ RODAPÉ ============ -->
+<footer class="foot">
+  <div class="wrap">
+    <h2>Fontes e método</h2>
+    <dl>
+      <dt>Endividamento</dt>
+      <dd>SGS 29037 e 29038 — saldo das dívidas das famílias com o Sistema Financeiro Nacional dividido pela renda acumulada dos últimos 12 meses. Dados até maio de 2026.</dd>
+      <dt>Saldos por modalidade</dt>
+      <dd>SGS 20612 (imobiliário), 20579 (consignado), 20581 (veículos), 20590 (cartão) e 20574 (pessoal não consignado). Saldos nominais em carteira, sem ajuste pela inflação. Dados até junho de 2026.</dd>
+      <dt>Taxas de juros</dt>
+      <dd>SGS 20774, 20747, 20749, 22022 (cartão rotativo) e 20742 — taxa média de novas operações, em % ao ano. Dados até junho de 2026.</dd>
+    </dl>
+  </div>
+</footer>
+
+<script>
+(function () {
+  document.documentElement.classList.add('has-js');
+  var bar = document.getElementById('progressBar');
+  var ticking = false;
+  function update() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+    ticking = false;
+  }
+  addEventListener('scroll', function () {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  }, { passive: true });
+  addEventListener('resize', update, { passive: true });
+  update();
+
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var items = document.querySelectorAll('.reveal');
+  if (reduce || !('IntersectionObserver' in window)) {
+    items.forEach(function (el) { el.classList.add('is-in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
+  items.forEach(function (el) { io.observe(el); });
+})();
+</script>
+</body>
+</html>
