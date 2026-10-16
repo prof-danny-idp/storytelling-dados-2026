@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>O Diário do Dado Protegido</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Courier+Prime:wght@400;700&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=UnifrakturMaguntia&display=swap">
+<style>
+/* Primeira página de jornal num canvas grande; a câmera dá zoom entre as matérias.
+   Cor com intenção: tinta preta para o que está protegido; um único vermelho de carimbo para o dado pessoal e o risco de exposição. */
+:root{
+  --paper:#e8e7e2;
+  --ink:#141414;
+  --ink-soft:#3b3b3a;
+  --halftone:#9a9995;
+  --red:#a3231b;        /* carimbo: dado pessoal, risco, o que escapou */
+  --red-soft:#e6c3bf;
+  --desk:#232323;
+  --f-mast:"UnifrakturMaguntia","Old English Text MT",serif;
+  --f-banner:"Anton","Impact","Arial Narrow Bold",sans-serif;
+  --f-body:"Old Standard TT","Times New Roman",Georgia,serif;
+  --f-type:"Courier Prime","Courier New",monospace;
+  color-scheme:light;
+}
+html,body{height:100%}
+body{margin:0;background:var(--desk);color:var(--ink);overflow:hidden;font-family:var(--f-body)}
+#stage{position:relative;width:100%;height:100%;overflow:hidden;cursor:pointer;
+  background:radial-gradient(ellipse at 50% 40%,#2e2e2e 0%,var(--desk) 70%)}
+#canvas{position:absolute;left:0;top:0;width:3600px;height:3600px;transform-origin:0 0;
+  background-color:var(--paper);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 30% 20%,rgba(255,255,255,.35),transparent 60%),
+    radial-gradient(ellipse at 80% 90%,rgba(0,0,0,.08),transparent 55%);
+  box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.4)}
+.art,.block{position:absolute;box-sizing:border-box}
+.ink{text-shadow:0 0 .6px rgba(20,20,20,.55)}
+/* cabeçalho */
+#mast{left:80px;top:30px;width:3440px;height:380px;text-align:center}
+#mast .ears{display:flex;justify-content:space-between;align-items:center;position:absolute;inset:40px 0 auto 0}
+#mast .ear{width:440px;border:3px solid var(--ink);padding:18px 20px;font-family:var(--f-type);font-size:24px;line-height:1.3;text-transform:uppercase;letter-spacing:.06em;text-align:center}
+#mast .ear b{display:block;font-family:var(--f-banner);font-weight:400;font-size:42px;letter-spacing:.02em}
+#mast .ear.red{border-color:var(--red);color:var(--red)}
+#mast h1{font-family:var(--f-mast);font-weight:400;font-size:178px;line-height:1;margin:30px 0 0;letter-spacing:.01em}
+#mast .dateline{position:absolute;left:0;right:0;bottom:0;border-top:6px double var(--ink);border-bottom:3px solid var(--ink);
+  display:flex;justify-content:space-between;padding:12px 6px;font-family:var(--f-type);font-size:25px;text-transform:uppercase;letter-spacing:.08em}
+/* tipografia */
+.kicker{font-family:var(--f-type);font-size:22px;text-transform:uppercase;letter-spacing:.14em;margin:0 0 10px}
+.sect{font-family:var(--f-banner);font-weight:400;font-size:34px;letter-spacing:.08em;text-transform:uppercase;border-bottom:4px solid var(--ink);padding-bottom:6px;margin:0 0 18px}
+.hd{font-family:var(--f-body);font-weight:700;line-height:1.02;margin:0 0 16px;text-wrap:balance}
+.txt{font-size:23px;line-height:1.42;margin:0 0 12px;hyphens:auto;text-align:justify}
+.cap{font-family:var(--f-type);font-size:17px;line-height:1.35;color:var(--ink-soft);margin:8px 0 0}
+.num{font-family:var(--f-banner);font-weight:400;line-height:.9;font-variant-numeric:tabular-nums}
+.boxed{border:3px solid var(--ink);padding:18px 20px;background:var(--paper)}
+.vrule{position:absolute;width:0;border-left:1.5px solid var(--ink)}
+.hrule{position:absolute;height:0;border-top:6px double var(--ink)}
+.red{color:var(--red)}
+.pii{background:var(--red);color:var(--paper);padding:0 6px;font-family:var(--f-type);font-size:.92em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.sens{color:var(--red);border-bottom:4px dotted var(--red);font-family:var(--f-type);font-size:.92em}
+.mark{font-family:var(--f-type);font-size:.92em;border:2px solid var(--ink);padding:0 6px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 26px;font-family:var(--f-type);font-size:18px;margin:10px 0 0}
+.legend i{display:inline-block;width:22px;height:16px;vertical-align:-2px;margin-right:8px;border:2px solid var(--ink)}
+/* manchete */
+#s-manchete .ban{font-family:var(--f-banner);font-weight:400;line-height:.86;margin:0;letter-spacing:-.005em}
+#s-manchete .ban small{display:block;font-size:96px;letter-spacing:.03em}
+#s-manchete .ban span{display:block;font-size:214px;color:var(--ink)}
+#s-manchete .deck{font-size:35px;line-height:1.2;font-style:italic;margin:22px 0 0;max-width:1800px}
+#s-manchete .seal{position:absolute;right:30px;top:40px;width:330px;height:330px;transform:rotate(-8deg)}
+/* em números */
+.cells{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.cell{border:3px solid var(--ink);padding:8px 14px 10px;background:var(--paper);min-height:146px;box-sizing:border-box}
+.cell .kicker{font-size:13px;min-height:15px;margin:0 0 2px}
+.cell .num{display:block;font-size:62px;white-space:nowrap}
+.cell b{display:block;font-size:21px;line-height:1.08;margin-top:4px}
+.cell .cap{margin:3px 0 0;font-size:14px;line-height:1.25}
+.cell.alert{border-color:var(--red)}
+.cell.alert .num{color:var(--red)}
+/* documento fictício */
+.doc{border:2px solid var(--ink);background:#f1f0eb;padding:20px 24px;font-size:25px;line-height:1.7;box-shadow:6px 8px 0 rgba(0,0,0,.15)}
+.doc .dh{font-family:var(--f-type);font-size:17px;letter-spacing:.12em;text-transform:uppercase;border-bottom:1.5px solid var(--ink);margin-bottom:10px;padding-bottom:4px;display:flex;justify-content:space-between}
+/* fluxo */
+.flow{display:grid;grid-template-columns:1fr 46px 1fr 46px 1fr;align-items:stretch;margin:6px 0 14px}
+.flow .st{border:3px solid var(--ink);padding:12px 14px;text-align:center;font-size:21px;line-height:1.25}
+.flow .st b{display:block;font-family:var(--f-banner);font-weight:400;font-size:34px;letter-spacing:.03em;margin-bottom:4px}
+.flow .ar{display:flex;align-items:center;justify-content:center;font-family:var(--f-banner);font-size:40px}
+.dest{display:grid;grid-template-columns:1fr 1fr;border:3px solid var(--ink)}
+.dest > div{padding:14px 18px;font-size:21px;line-height:1.3}
+.dest > div + div{border-left:3px solid var(--ink)}
+.dest h4{font-family:var(--f-banner);font-weight:400;font-size:36px;margin:0 0 6px;letter-spacing:.04em}
+.dest .ext h4{background:var(--ink);color:var(--paper);display:inline-block;padding:0 12px}
+.swap{font-family:var(--f-type);font-size:19px;line-height:1.5;margin-top:8px}
+/* gráficos */
+.hbar{display:grid;grid-template-columns:260px 1fr 110px;align-items:center;gap:14px;margin:12px 0}
+.hbar .l{font-family:var(--f-type);font-size:21px;text-align:right}
+.hbar .t{position:relative;height:40px;border-left:2px solid var(--ink)}
+.hbar .f{position:absolute;left:0;top:0;bottom:0;background:var(--ink)}
+.hbar .f.hi{background:var(--red)}
+.hbar .v{font-family:var(--f-banner);font-size:36px;line-height:1}
+.hbar .v.hi{color:var(--red)}
+.meta{position:absolute;top:-8px;bottom:-8px;border-left:3px dashed var(--red);z-index:2}
+.meta span{position:absolute;top:-34px;left:-60px;width:120px;text-align:center;font-family:var(--f-type);font-size:18px;font-weight:700;color:var(--red);white-space:nowrap}
+.ci{position:absolute;top:50%;height:0;border-top:3px solid var(--paper)}
+.ci::before,.ci::after{content:"";position:absolute;top:-10px;height:17px;border-left:3px solid var(--paper)}
+.ci::before{left:0}.ci::after{right:0}
+.explain{list-style:none;margin:10px 0 0;padding:0;font-size:22px;line-height:1.35}
+.explain li{padding:7px 0;border-top:1px solid var(--ink-soft)}
+.explain b{font-family:var(--f-type)}
+.stack{display:flex;height:64px;border:3px solid var(--ink);margin:6px 0 8px}
+.stack > div{height:100%;position:relative}
+.stack > div + div{border-left:3px solid var(--paper)}
+.sw-pii{background:var(--red)}
+.sw-sens{background-color:var(--paper);background-image:radial-gradient(circle,var(--red) 40%,transparent 43%);background-size:10px 10px}
+.sw-pj{background-color:var(--paper);background-image:radial-gradient(circle,var(--ink) 30%,transparent 33%);background-size:10px 10px}
+.sw-trap{background:repeating-linear-gradient(45deg,var(--paper) 0 6px,var(--ink) 6px 8px)}
+.stat3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:14px}
+.stat3 .n{font-size:58px;white-space:nowrap}
+.stat3 p{font-size:19px;line-height:1.28;margin:6px 0 0}
+.waffle{display:grid;gap:2px;margin:12px 0 8px}
+.waffle i{aspect-ratio:1;background:#bdbcb6}
+.waffle i.out{background:var(--red)}
+.waffle i.held{background:var(--ink)}
+.wf{display:grid;grid-template-columns:1fr 1fr;gap:36px}
+.wf h4{font-family:var(--f-body);font-size:25px;line-height:1.15;margin:0}
+.wf .num{font-size:66px}
+svg text{font-family:"Courier Prime","Courier New",monospace}
+/* citação, ressalva, fim */
+#s-lei{border-top:8px solid var(--red);border-bottom:8px solid var(--red);padding:22px 26px;background:var(--paper);text-align:center}
+#s-lei p{font-style:italic;font-size:36px;line-height:1.18;margin:0 0 14px}
+#s-lei .q{font-family:var(--f-banner);font-size:100px;line-height:.6;display:block;margin-bottom:4px;color:var(--red)}
+#s-ressalva{border:3px dashed var(--ink);padding:22px 26px;background:var(--paper)}
+#s-ressalva ul{margin:0;padding-left:26px;font-size:23px;line-height:1.35}
+#s-ressalva li{margin:6px 0}
+#s-fim{text-align:center;display:flex;flex-direction:column;justify-content:center}
+#s-fim .big{font-family:var(--f-body);font-weight:700;font-style:italic;font-size:84px;line-height:1;margin:0 0 18px}
+#s-fim .two{display:grid;grid-template-columns:1fr 1fr;gap:0;border:3px solid var(--ink);text-align:left;margin:10px auto 0;max-width:1800px}
+#s-fim .two > div{padding:14px 20px;font-size:23px;line-height:1.35}
+#s-fim .two > div + div{border-left:3px solid var(--ink)}
+#s-fim .two h4{font-family:var(--f-banner);font-weight:400;font-size:32px;margin:0 0 6px;letter-spacing:.04em}
+#exped{left:80px;top:3360px;width:3440px;height:200px;border-top:3px solid var(--ink);padding-top:12px;font-family:var(--f-type);font-size:16px;line-height:1.45;column-count:3;column-gap:50px;color:var(--ink-soft)}
+#exped b{color:var(--ink)}
+/* foco */
+.art,.block,.hrule,.vrule{transition:opacity .7s ease}
+#canvas.focus .art,#canvas.focus .block,#canvas.focus .hrule,#canvas.focus .vrule{opacity:.07}
+#canvas.focus .art.on{opacity:1}
+/* interface */
+#bar{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;align-items:center;gap:6px;
+  background:rgba(20,20,20,.88);color:#e8e7e2;padding:6px;border-radius:4px;font-family:var(--f-type);font-size:14px;transition:opacity .4s;z-index:5;max-width:calc(100% - 32px)}
+#bar.idle{opacity:0}
+#bar button{font:inherit;color:inherit;background:transparent;border:1px solid rgba(232,231,226,.25);padding:7px 11px;border-radius:3px;cursor:pointer;white-space:nowrap}
+#bar button:hover,#bar button:focus-visible{background:#e8e7e2;color:#141414;outline:none}
+#count{padding:0 8px;font-variant-numeric:tabular-nums;white-space:nowrap}
+#notes{position:fixed;left:16px;right:16px;bottom:calc(66px + env(safe-area-inset-bottom,0px));max-width:760px;margin:0 auto;background:#f3f2ee;color:#141414;border:3px solid #141414;
+  padding:16px 20px;font-family:var(--f-body);font-size:17px;line-height:1.5;z-index:5;box-shadow:0 10px 30px rgba(0,0,0,.5);max-height:40vh;overflow:auto}
+#notes h5{font-family:var(--f-type);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 6px;color:#3b3b3a}
+#notes p{margin:0}
+#help{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:rgba(20,20,20,.85);color:#e8e7e2;font-family:var(--f-type);font-size:13px;padding:7px 12px;border-radius:3px;z-index:5;transition:opacity .6s;text-align:center;max-width:calc(100% - 32px)}
+#help.gone{opacity:0;pointer-events:none}
+@media (max-width:560px){#bar .wide{display:none}}
+@media (prefers-reduced-motion:reduce){#canvas{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="stage" aria-label="Apresentação em formato de jornal com zoom">
+<div id="canvas">
+
+  <!-- CABEÇALHO -->
+  <header id="mast" class="block ink">
+    <div class="ears">
+      <div class="ear">Edição especial<b>IA no setor público</b>dados da pesquisa</div>
+      <div class="ear red">Pergunta central<b>Dá para usar?</b>sem expor o cidadão</div>
+    </div>
+    <h1>O Diário do Dado Protegido</h1>
+    <div class="dateline"><span>Ano I · Edição da dissertação</span><span>Por Luan Coli · Mestrado IDP · Outubro de 2026</span><span>Orientação: Prof. Dr. Marcelo Pita</span></div>
+  </header>
+
+  <!-- MANCHETE -->
+  <article id="s-manchete" class="art ink" style="left:80px;top:440px;width:2300px;height:540px">
+    <p class="kicker">Pergunta central desta edição · Tecnologia e LGPD</p>
+    <h2 class="ban"><small>Dá para o servidor público usar IA</small><span>SEM EXPOR O CIDADÃO?</span></h2>
+    <p class="deck">Um protótipo de mestrado, o BOPPII, coloca um porteiro entre o servidor e o assistente de IA. No teste com 2.402 documentos, ele achou 89 de cada 100 dados pessoais e deixou escapar 11 de 852 textos sensíveis. Falta provar que é rápido o bastante.</p>
+    <svg class="seal" viewBox="0 0 330 330" aria-hidden="true">
+      <circle cx="165" cy="165" r="150" fill="none" stroke="#a3231b" stroke-width="10"/>
+      <circle cx="165" cy="165" r="128" fill="none" stroke="#a3231b" stroke-width="3"/>
+      <text x="165" y="150" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="58" fill="#a3231b" letter-spacing="2">LGPD</text>
+      <text x="165" y="196" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="25" fill="#a3231b" letter-spacing="2">DADO PROTEGIDO</text>
+      <text x="165" y="232" text-anchor="middle" font-size="20" fill="#a3231b" letter-spacing="2">LEI 13.709/2018</text>
+    </svg>
+  </article>
+
+  <!-- EM NÚMEROS -->
+  <section id="s-numeros" class="art ink" style="left:2440px;top:440px;width:1080px;height:540px">
+    <div class="sect" style="margin-bottom:12px">A pesquisa, em números</div>
+    <div class="cells">
+      <div class="cell"><p class="kicker">O banco de testes</p><span class="num">3.000</span><b>documentos fictícios</b><p class="cap">2 IAs geradoras, 6 tipos de texto</p></div>
+      <div class="cell"><p class="kicker"></p><span class="num">6.758</span><b>dados marcados</b><p class="cap">gabarito conhecido de antemão</p></div>
+      <div class="cell"><p class="kicker"></p><span class="num">21</span><b>tipos de dado</b><p class="cap">de CPF a diagnóstico</p></div>
+      <div class="cell"><p class="kicker">O detector</p><span class="num">89 / 100</span><b>dados pessoais achados</b><p class="cap">recall de 0,886 no teste</p></div>
+      <div class="cell"><p class="kicker"></p><span class="num">0,855</span><b>de F1</b><p class="cap">meta fixada antes: 0,85</p></div>
+      <div class="cell"><p class="kicker"></p><span class="num">0</span><b>falhas</b><p class="cap">em 2.402 documentos de teste</p></div>
+      <div class="cell alert"><p class="kicker">O Árbitro</p><span class="num">11 / 852</span><b>textos sensíveis escaparam</b><p class="cap">1,3%; máximo aceito: 5%</p></div>
+      <div class="cell"><p class="kicker"></p><span class="num">80 / 1.550</span><b>retidos sem precisar</b><p class="cap">5,2%; máximo aceito: 15%</p></div>
+      <div class="cell"><p class="kicker"></p><span class="num">3,2 s</span><b>por decisão</b><p class="cap">média do Árbitro, como gravada</p></div>
+    </div>
+  </section>
+
+  <div class="hrule" style="left:80px;top:1000px;width:3440px"></div>
+  <div class="vrule" style="left:1215px;top:1020px;height:1290px"></div>
+  <div class="vrule" style="left:2385px;top:1020px;height:1290px"></div>
+
+  <!-- I · O RISCO -->
+  <article id="s-problema" class="art ink" style="left:80px;top:1030px;width:1100px;height:600px">
+    <h3 class="sect">I · O risco</h3>
+    <h2 class="hd" style="font-size:60px">O pedido ao chat leva junto o cidadão</h2>
+    <p class="txt">Para resumir um processo, basta colar o texto no assistente. Junto vão nome, CPF e, às vezes, um diagnóstico, e tudo sai do órgão.</p>
+    <div class="doc">
+      <div class="dh"><span>Requerimento administrativo</span><span>documento fictício</span></div>
+      A servidora <span class="pii">Maria Exemplo da Silva</span>, CPF <span class="pii">000.000.000-00</span>, lotada na Secretaria de Saúde, requer licença por motivo de <span class="sens">tratamento psiquiátrico</span>, conforme laudo anexo. Contato: <span class="pii">(61) 90000-0000</span>.
+    </div>
+    <div class="legend"><span><i style="background:var(--red);border-color:var(--red)"></i>dado pessoal</span><span><i style="border:0;border-bottom:4px dotted var(--red);height:12px"></i>dado sensível</span></div>
+  </article>
+
+  <aside id="s-lei" class="art ink" data-rot="-2" style="left:150px;top:1670px;width:960px;height:280px;transform:rotate(-2deg)">
+    <span class="q">“</span>
+    <p>Qualquer tratamento de dados pessoais que revele dados pessoais sensíveis e que possa causar dano ao titular.</p>
+    <p class="cap" style="font-size:18px;margin:0">LGPD, art. 11, § 1º: onde vale o regime mais rígido da lei</p>
+  </aside>
+
+  <!-- II · O PORTEIRO -->
+  <article id="s-fluxo" class="art ink" style="left:80px;top:1990px;width:1100px;height:330px">
+    <p class="kicker">II · O porteiro</p>
+    <h2 class="hd" style="font-size:42px;margin-bottom:10px">Dois filtros antes de qualquer envio</h2>
+    <div class="flow">
+      <div class="st"><b>Pedido</b>do servidor, inteiro</div><div class="ar">→</div>
+      <div class="st"><b>1 · Analisador</b>acha os dados pessoais</div><div class="ar">→</div>
+      <div class="st"><b>2 · Árbitro</b>decide para onde vai</div>
+    </div>
+    <div class="dest">
+      <div><h4 class="red">Fica no órgão</h4>Tem dado sensível: responde um modelo local.</div>
+      <div class="ext"><h4>Sai</h4><div>Dado comum vira marcador: <span class="swap"><span class="pii">Maria</span> → <span class="mark">[NOME_1]</span></span></div></div>
+    </div>
+  </article>
+
+  <!-- III · O BANCO DE TESTES -->
+  <article id="s-dataset" class="art ink" style="left:1250px;top:1030px;width:1100px;height:640px">
+    <h3 class="sect">III · O banco de testes</h3>
+    <h2 class="hd" style="font-size:52px">Um teste exige saber onde está cada dado: 6.758 de 6.758 estão no lugar</h2>
+    <p class="txt" style="font-size:22px">Os 3.000 documentos são fictícios, escritos por duas IAs (Claude e DeepSeek). Assim, cada dado pessoal é conhecido de antemão, há dado sensível em volume e há armadilhas de propósito.</p>
+    <p class="kicker" style="margin:6px 0 4px">O que foi marcado nos 3.000 documentos</p>
+    <div class="stack" role="img" aria-label="Composição das 6.758 marcações">
+      <div class="sw-pii" style="width:63.8%" title="Identificador de pessoa: 4.309"></div>
+      <div class="sw-sens" style="width:15.8%" title="Trecho com dado sensível: 1.070"></div>
+      <div class="sw-pj" style="width:12.2%" title="Pessoa jurídica: 822"></div>
+      <div class="sw-trap" style="width:8.2%" title="Armadilha: 557"></div>
+    </div>
+    <div class="legend" style="margin-top:4px">
+      <span><i class="sw-pii" style="border-color:var(--red)"></i>pessoa: <b>4.309</b></span>
+      <span><i class="sw-sens"></i>dado sensível: <b>1.070</b></span>
+      <span><i class="sw-pj"></i>empresa: <b>822</b></span>
+      <span><i class="sw-trap"></i>armadilha: <b>557</b></span>
+    </div>
+    <div class="stat3">
+      <div><span class="num n">~30%</span><p>dos CPF e CNPJ com dígito inválido, de propósito</p></div>
+      <div><span class="num n">546</span><p>documentos sem nenhum dado pessoal</p></div>
+      <div><span class="num n">0</span><p>dados de pessoas reais: o banco pode ser publicado</p></div>
+    </div>
+  </article>
+
+  <article id="s-vocab" class="art ink" style="left:1250px;top:1710px;width:1100px;height:600px">
+    <p class="kicker">Parece documento de verdade?</p>
+    <h2 class="hd" style="font-size:46px">Mostrar um documento real à IA geradora deixa o texto mais parecido com ele</h2>
+    <svg viewBox="0 0 1100 330" width="1100" height="330" role="img" aria-label="Distância de vocabulário por tipo de documento, com e sem documento de referência">
+      <g font-size="17" fill="#3b3b3a">
+        <text x="200" y="22">0 · tão parecido quanto</text><text x="200" y="42">dois grupos de reais</text>
+        <text x="1060" y="22" text-anchor="end">1 · tão diferente quanto</text><text x="1060" y="42" text-anchor="end">outro tipo de documento</text>
+      </g>
+      <g id="vocab-rows"></g>
+    </svg>
+    <div class="legend" style="margin-top:0"><span><i style="background:var(--ink);border-radius:50%;width:18px;height:18px"></i>com documento real no pedido</span><span><i style="border-radius:50%;width:18px;height:18px;background:var(--paper)"></i>sem documento real</span></div>
+    <p class="cap">Divergência de Jensen-Shannon entre as palavras, em escala de 0 a 1; média de Claude e DeepSeek. Não é cópia: só 1 de 1.500 textos repete 20 palavras seguidas de um real. No administrativo, a diferença pode ser acaso. Só 3 dos 6 tipos têm documentos reais para comparar (10 por tipo).</p>
+  </article>
+
+  <!-- IV · O DETECTOR -->
+  <article id="s-detector" class="art ink" style="left:2420px;top:1030px;width:1100px;height:620px">
+    <h3 class="sect">IV · O detector</h3>
+    <h2 class="hd" style="font-size:54px">Ele acha 89 de cada 100 dados pessoais e passa da meta</h2>
+    <div style="margin:46px 0 0">
+      <div class="hbar"><span class="l">Precisão</span><div class="t"><div class="f" style="width:82.6%"></div><div class="meta" style="left:85%"><span>meta 0,85</span></div></div><span class="v">0,826</span></div>
+      <div class="hbar"><span class="l">Recall</span><div class="t"><div class="f" style="width:88.6%"></div><div class="meta" style="left:85%"></div></div><span class="v">0,886</span></div>
+      <div class="hbar"><span class="l">F1</span><div class="t"><div class="f" style="width:85.5%"></div><div class="ci" style="left:84.5%;width:2%"></div><div class="meta" style="left:85%"></div></div><span class="v">0,855</span></div>
+    </div>
+    <ul class="explain">
+      <li><b>Precisão:</b> de cada 100 trechos que ele apontou, 83 eram mesmo dado pessoal.</li>
+      <li><b>Recall:</b> de cada 100 dados pessoais que existiam, ele achou 89.</li>
+      <li><b>F1:</b> combina os dois. Intervalo de 95%: 0,845 a 0,865.</li>
+    </ul>
+    <p class="cap">2.398 documentos que não foram usados para ajustar o modelo; medição única, em 11/10/2026.</p>
+  </article>
+
+  <article id="s-dominio" class="art ink" style="left:2420px;top:1690px;width:1100px;height:620px">
+    <p class="kicker">Onde ele erra</p>
+    <h2 class="hd" style="font-size:48px">Na conversa informal, ele vê dado pessoal onde não há</h2>
+    <p class="kicker" style="margin:10px 0 0">F1 por tipo de texto, no teste</p>
+    <div id="dom-bars"></div>
+    <p class="txt" style="font-size:22px;margin-top:8px">No chat, a precisão cai para 0,569: de cada 100 trechos marcados, 43 eram engano. Gírias e apelidos parecem nome de gente.</p>
+  </article>
+
+  <div class="hrule" style="left:80px;top:2340px;width:3440px"></div>
+  <div class="vrule" style="left:1215px;top:2360px;height:610px"></div>
+  <div class="vrule" style="left:2385px;top:2360px;height:610px"></div>
+
+  <!-- V · O ÁRBITRO -->
+  <article id="s-arbitro" class="art ink" style="left:80px;top:2370px;width:1100px;height:600px">
+    <h3 class="sect">V · O Árbitro</h3>
+    <h2 class="hd" style="font-size:50px">Só 11 de 852 textos sensíveis saíram do órgão</h2>
+    <div class="wf">
+      <div><span class="num red">1,3%</span><h4>Deviam ficar, saíram: <b class="red">11</b> de 852</h4><div class="waffle" id="w-out" style="grid-template-columns:repeat(62,1fr)"></div><p class="cap">Máximo aceito: 5%.</p></div>
+      <div><span class="num">5,2%</span><h4>Podiam sair, ficaram: <b>80</b> de 1.550</h4><div class="waffle" id="w-held" style="grid-template-columns:repeat(62,1fr)"></div><p class="cap">Máximo aceito: 15%.</p></div>
+    </div>
+  </article>
+
+  <article id="s-saude" class="art ink" style="left:1250px;top:2370px;width:1100px;height:600px">
+    <p class="kicker">Na dúvida, segura</p>
+    <h2 class="hd" style="font-size:48px">Na saúde, nenhum texto escapou, mas mais de 1 em 4 ficou retido sem precisar</h2>
+    <p class="kicker" style="margin:10px 0 0">Retidos sem precisar, por tipo de texto</p>
+    <div id="ret-bars"></div>
+    <p class="cap">Prontuários: 0 de 244 textos sensíveis escaparam; 58 de 211 que podiam sair ficaram. Errar para o lado seguro custa uso, não privacidade.</p>
+  </article>
+
+  <!-- VI · O RELÓGIO -->
+  <article id="s-tempo" class="art ink" style="left:2420px;top:2370px;width:1100px;height:600px">
+    <h3 class="sect">VI · O relógio</h3>
+    <h2 class="hd" style="font-size:50px">Texto curto passa em 2 segundos; texto longo leva quase 12</h2>
+    <svg id="tempo-svg" viewBox="0 0 1100 340" width="1100" height="340" role="img" aria-label="Tempo médio por documento conforme o tamanho do texto"></svg>
+    <p class="cap">Segundos por documento, média, como gravados no teste; o relógio da máquina adianta cerca de 8%. 80% dos documentos têm menos de 100 palavras. A meta de tempo (até 10 s no p95, de ponta a ponta) ainda será medida.</p>
+  </article>
+
+  <div class="hrule" style="left:80px;top:2995px;width:3440px"></div>
+
+  <!-- RESSALVA E FIM -->
+  <aside id="s-ressalva" class="art ink" data-rot="-1.2" style="left:110px;top:3030px;width:1060px;height:300px;transform:rotate(-1.2deg)">
+    <p class="kicker">Para ser justo</p>
+    <ul>
+      <li>Documentos fictícios: só 3 dos 6 tipos têm documentos reais para comparar, 10 de cada.</li>
+      <li>O gabarito foi conferido por uma pessoa só, em 150 documentos sorteados.</li>
+      <li>Ainda faltam medir a utilidade das respostas com marcadores e o tempo de ponta a ponta.</li>
+    </ul>
+  </aside>
+
+  <article id="s-fim" class="art ink" style="left:1250px;top:3020px;width:2270px;height:320px">
+    <p class="big">Sim, dá: com um porteiro que fica dentro do órgão.</p>
+    <div class="two">
+      <div><h4>Provado</h4>Acha a maioria dos dados pessoais e, na dúvida, segura o texto em casa.</div>
+      <div><h4 class="red">Falta provar</h4>Que é rápido em texto longo e que a resposta continua útil com os marcadores.</div>
+    </div>
+  </article>
+
+  <footer id="exped" class="block">
+    <b>EXPEDIENTE E FONTES.</b> Texto, dados e edição: <b>Luan Coli</b>, dissertação de mestrado no IDP “Proxy open source para uso seguro e auditável de LLMs no setor público brasileiro”, orientação do Prof. Dr. Marcelo Pita. <b>Dados:</b> base da própria pesquisa, divulgável por não conter dado de pessoa real: Golden Dataset de 3.000 documentos fictícios (gerados por Claude Sonnet 5 e DeepSeek V4 Flash, curadoria 0.7) e registros dos experimentos no repositório do projeto: exp-001 (Analisador, rodada única no teste, 11/10/2026), exp-002 (Árbitro, rodada única no teste, 11/10/2026), análise do dataset (04/10/2026), análise de tamanho e semelhança (13/10/2026), cópia dos documentos de referência (13/10/2026). Modelo dos dois filtros: Qwen3 14B, local, via Ollama. Distância de vocabulário: divergência de Jensen-Shannon (Lin, 1991). Validação do banco de testes inspirada em Savkin, Ionov e Konovalov (2025), SPY, NAACL. Lei: Lei nº 13.709/2018 (LGPD), art. 11, § 1º. Tempos como gravados numa estação com relógio adiantado em cerca de 8% (sonda de 11/10/2026). Documento do item I: fictício, criado para esta edição. Trabalho final de storytelling de dados, outubro de 2026.
+  </footer>
+</div>
+</div>
+
+<div id="help">← → ou toque nas laterais para navegar · N notas · O visão geral · F tela cheia</div>
+<div id="notes" hidden><h5 id="notes-h">Roteiro</h5><p id="notes-p"></p></div>
+<nav id="bar" aria-label="Controles da apresentação">
+  <button id="b-prev" aria-label="Anterior">←</button>
+  <span id="count">1 / 15</span>
+  <button id="b-next" aria-label="Próximo">→</button>
+  <button id="b-ov" class="wide">Visão geral</button>
+  <button id="b-notes">Notas</button>
+  <button id="b-fs" class="wide">Tela cheia</button>
+</nav>
+
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  function el(tag,attrs,parent,text){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;if(parent)parent.appendChild(e);return e;}
+  function br(x){return String(x).replace('.',',');}
+
+  // waffles: 852 textos sensíveis (11 escaparam) e 1.550 que podiam sair (80 retidos)
+  function waffle(id,total,hit,cls){var g=document.getElementById(id);for(var i=0;i<total;i++){var c=document.createElement('i');if(i>=total-hit)c.className=cls;g.appendChild(c);}}
+  waffle('w-out',852,11,'out');
+  waffle('w-held',1550,80,'held');
+
+  // barras horizontais
+  function bars(id,rows,max,fmt,hiKey){
+    var box=document.getElementById(id);
+    rows.forEach(function(r){
+      var w=document.createElement('div');w.className='hbar';
+      var hi=r[0]===hiKey?' hi':'';
+      w.innerHTML='<span class="l">'+r[0]+'</span><div class="t"><div class="f'+hi+'" style="width:'+(r[1]/max*100)+'%" title="'+r[0]+': '+fmt(r[1])+'"></div></div><span class="v'+hi+'">'+fmt(r[1])+'</span>';
+      box.appendChild(w);
+    });
+  }
+  // F1 por tipo de texto (exp-001, teste)
+  bars('dom-bars',[['Jurídico',0.879],['Administrativo',0.879],['Médico',0.875],['Diário oficial',0.867],['Outros',0.834],['Chat informal',0.696]],1,function(v){return br(v.toFixed(3))},'Chat informal');
+  // proteção excessiva por tipo de texto (exp-002, teste)
+  bars('ret-bars',[['Médico',0.275],['Chat informal',0.033],['Administrativo',0.028],['Diário oficial',0.009],['Jurídico',0.007],['Outros',0.007]],0.3,function(v){return br((v*100).toFixed(1))+'%'},null);
+
+  // régua de vocabulário (posição de 0 a 1; média de Claude e DeepSeek)
+  var vr=document.getElementById('vocab-rows'),X0=200,X1=1060;
+  [['Jurídico',0.13,0.57],['Diário oficial',0.46,0.71],['Administrativo',0.58,0.80]].forEach(function(r,i){
+    var y=105+i*92,xa=X0+(X1-X0)*r[1],xb=X0+(X1-X0)*r[2];
+    el('text',{x:0,y:y+7,'font-size':22,fill:'#141414'},vr,r[0]);
+    el('line',{x1:X0,y1:y,x2:X1,y2:y,stroke:'#9a9995','stroke-width':2},vr);
+    el('line',{x1:X0,y1:y-12,x2:X0,y2:y+12,stroke:'#141414','stroke-width':2},vr);
+    el('line',{x1:X1,y1:y-12,x2:X1,y2:y+12,stroke:'#141414','stroke-width':2},vr);
+    el('line',{x1:xa,y1:y,x2:xb,y2:y,stroke:'#141414','stroke-width':5},vr);
+    var a=el('circle',{cx:xa,cy:y,r:13,fill:'#141414'},vr);el('title',{},a,r[0]+', com documento real no pedido: '+br(r[1].toFixed(2)));
+    var b=el('circle',{cx:xb,cy:y,r:13,fill:'#e8e7e2',stroke:'#141414','stroke-width':4},vr);el('title',{},b,r[0]+', sem documento real: '+br(r[2].toFixed(2)));
+    el('text',{x:xa,y:y-22,'text-anchor':'middle','font-size':22,'font-weight':700,fill:'#141414'},vr,br(r[1].toFixed(2)));
+    el('text',{x:xb,y:y+40,'text-anchor':'middle','font-size':22,fill:'#3b3b3a'},vr,br(r[2].toFixed(2)));
+  });
+
+  // tempo médio por documento conforme o tamanho (exp-001 e exp-002, teste)
+  (function(){
+    var s=document.getElementById('tempo-svg');
+    var faixas=['<50','50–74','75–99','100–199','200–353','354–599','600+'];
+    var an=[1.640,2.187,2.692,4.331,9.829,11.629,11.790], ar=[2.902,3.073,3.147,3.241,3.808,4.403,5.042];
+    var L=70,R=820,T=20,B=280,ymax=14;
+    function X(i){return L+(R-L)*i/(faixas.length-1)} function Y(v){return B-(B-T)*v/ymax}
+    [0,4,8,12].forEach(function(v){el('line',{x1:L,y1:Y(v),x2:R,y2:Y(v),stroke:'#9a9995','stroke-width':1,'stroke-dasharray':'2 5'},s);el('text',{x:L-12,y:Y(v)+6,'text-anchor':'end','font-size':18,fill:'#3b3b3a'},s,v+' s');});
+    el('line',{x1:L,y1:B,x2:R,y2:B,stroke:'#141414','stroke-width':2},s);
+    faixas.forEach(function(f,i){el('text',{x:X(i),y:B+28,'text-anchor':'middle','font-size':17,fill:'#3b3b3a'},s,f);});
+    el('text',{x:(L+R)/2,y:B+56,'text-anchor':'middle','font-size':17,fill:'#3b3b3a'},s,'palavras no documento');
+    function serie(v,dash,label){
+      el('polyline',{points:v.map(function(y,i){return X(i)+','+Y(y)}).join(' '),fill:'none',stroke:'#141414','stroke-width':4,'stroke-dasharray':dash||''},s);
+      v.forEach(function(y,i){var c=el('circle',{cx:X(i),cy:Y(y),r:7,fill:dash?'#e8e7e2':'#141414',stroke:'#141414','stroke-width':3},s);el('title',{},c,label+', '+faixas[i]+' palavras: '+br(y.toFixed(1))+' s');});
+      var last=v[v.length-1];
+      el('text',{x:R+18,y:Y(last)+7,'font-size':21,'font-weight':700,fill:'#141414'},s,label);
+      el('text',{x:R+18,y:Y(last)+31,'font-size':19,fill:'#3b3b3a'},s,br(last.toFixed(1))+' s');
+    }
+    serie(an,null,'Analisador');
+    serie(ar,'8 6','Árbitro');
+    el('text',{x:X(1),y:Y(an[1])+34,'text-anchor':'middle','font-size':19,'font-weight':700,fill:'#141414'},s,br(an[1].toFixed(1))+' s');
+  })();
+
+  var STOPS=[
+    ['s-problema','Abertura: o risco','Comece pelo documento, sem apresentar nada antes: "Imagine que você é servidor e precisa resumir este requerimento. Cola no ChatGPT. Junto vão o nome, o CPF, o telefone e um tratamento psiquiátrico." Aponte os trechos em vermelho. "O vermelho, nesta edição, é sempre dado pessoal ou risco."'],
+    ['s-manchete','A pergunta central','"Então a pergunta deste trabalho, e da minha dissertação, é esta: dá para o servidor público usar IA sem expor o cidadão?" Leia o subtítulo devagar; ele já antecipa a resposta e o que ainda falta.'],
+    ['s-lei','A lei','"A LGPD trata dado sensível com um regime mais rígido: vale para qualquer tratamento que revele esse dado e possa causar dano. Mandar um laudo para um serviço de fora do órgão é exatamente isso."'],
+    ['s-fluxo','A solução','"O BOPPII é um porteiro em dois filtros, rodando dentro do órgão. O primeiro acha os dados pessoais. O segundo decide: se tem dado sensível, a pergunta fica num modelo local; se é dado comum, troca o nome por um marcador e só então envia." Aponte Maria virando [NOME_1].'],
+    ['s-dataset','O banco de testes','"Para saber se o porteiro funciona, eu precisava de um gabarito: saber onde está cada dado. Com documento real isso não existe pronto. Então gerei 3.000 documentos fictícios com duas IAs, com 6.758 dados marcados. Todos conferem com o texto." Aponte a barra: vermelho é pessoa, pontilhado é dado sensível, hachura é armadilha.'],
+    ['s-vocab','Parece real?','"A primeira pergunta do meu orientador foi: esses textos parecem documento de verdade? Medi a distância de vocabulário. Quando a IA vê um documento real de exemplo, o texto chega bem mais perto dele, sem copiar: só 1 de 1.500 repete um trecho." Seja honesto: "No administrativo a diferença pode ser acaso, e só 3 tipos têm documentos reais para comparar."'],
+    ['s-detector','O detector','"Agora o resultado. Eu fixei a meta antes do teste: F1 de 0,85. Deu 0,855. Em português claro: de cada 100 dados pessoais, ele achou 89." Aponte a linha tracejada da meta.'],
+    ['s-dominio','Onde erra','"Mas ele erra mais em um lugar: na conversa informal. Ali ele vê dado pessoal onde não há. De cada 100 marcações no chat, 43 eram engano." A barra vermelha é o ponto fraco.'],
+    ['s-arbitro','O Árbitro','"O segundo filtro é o que mais importa para a lei. Cada quadradinho é um texto com dado sensível que devia ficar no órgão. Só os 11 vermelhos saíram: 1,3%, quando o máximo aceito era 5%." Depois aponte o lado direito: "e de 1.550 que podiam sair, 80 ficaram retidos sem precisar."'],
+    ['s-saude','Na dúvida, segura','"Onde ele mais segura é na saúde: nenhum prontuário escapou, mas mais de 1 em 4 ficou retido sem precisar. É um erro que custa uso, não privacidade. Para o setor público, é o lado certo de errar."'],
+    ['s-tempo','O relógio','"O ponto fraco é o tempo. Texto curto passa em 2 segundos. Texto longo, como uma petição inteira, leva quase 12 no primeiro filtro." Ressalve: "80% do teste tem menos de 100 palavras, e a medida oficial de tempo ainda vai ser feita de ponta a ponta."'],
+    ['s-numeros','Em números','Recapitule em ritmo rápido, três linhas: "O banco: 3.000 documentos, 6.758 dados, 21 tipos. O detector: 89 de 100, F1 acima da meta, zero falhas. O Árbitro: 11 de 852 escaparam, decisão em cerca de 3 segundos."'],
+    ['s-ressalva','Para ser justo','"Para ser justo: os documentos são fictícios, o gabarito foi conferido só por mim, e ainda faltam dois testes, utilidade e tempo." Não pule; isso dá credibilidade.'],
+    ['s-fim','Conclusão','"Então, dá para usar IA sem expor o cidadão? Sim, com um porteiro que fica dentro do órgão. Ele acha a maioria dos dados e, na dúvida, segura o texto em casa. O que falta provar é que ele é rápido em texto longo." Pausa.'],
+    ['@all','Fechamento','A câmera se afasta e mostra a página inteira. "Obrigado." As fontes estão no rodapé.']
+  ];
+
+  var stage=document.getElementById('stage'),cv=document.getElementById('canvas');
+  var W=3600,H=3600,idx=0,cur=null;
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function boxOf(id){
+    if(id==='@all')return{x:0,y:0,w:W,h:H,r:0,all:true};
+    var e=document.getElementById(id);
+    return{x:e.offsetLeft,y:e.offsetTop,w:e.offsetWidth,h:e.offsetHeight,r:parseFloat(e.dataset.rot||0)};
+  }
+  function apply(b,ms){
+    var vw=stage.clientWidth,vh=stage.clientHeight,pad=b.all?0.95:0.86;
+    var s=Math.min(vw/b.w,vh/b.h)*pad,cx=b.x+b.w/2,cy=b.y+b.h/2;
+    cv.style.transition=(ms&&!reduce)?'transform '+ms+'ms cubic-bezier(.62,0,.3,1)':'none';
+    cv.style.transform='translate('+vw/2+'px,'+vh/2+'px) scale('+s+') rotate('+(-b.r)+'deg) translate('+(-cx)+'px,'+(-cy)+'px)';
+  }
+  function go(i){
+    idx=Math.max(0,Math.min(STOPS.length-1,i));
+    var id=STOPS[idx][0],t=boxOf(id);
+    var on=cv.querySelectorAll('.art.on');for(var k=0;k<on.length;k++)on[k].classList.remove('on');
+    if(t.all){cv.classList.remove('focus');}
+    else{cv.classList.add('focus');document.getElementById(id).classList.add('on');}
+    apply(t,cur?(t.all?1600:1150):0);
+    cur=t;
+    document.getElementById('count').textContent=(idx+1)+' / '+STOPS.length;
+    document.getElementById('notes-h').textContent='Roteiro · '+STOPS[idx][1];
+    document.getElementById('notes-p').textContent=STOPS[idx][2];
+  }
+  function next(){go(idx+1)} function prev(){go(idx-1)}
+  function overview(){cv.classList.remove('focus');apply(boxOf('@all'),1200);cur=boxOf('@all');}
+  function toggleNotes(){var n=document.getElementById('notes');n.hidden=!n.hidden;wake();}
+  function fs(){try{var p=document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();if(p&&p.catch)p.catch(function(){});}catch(e){}}
+
+  var bar=document.getElementById('bar'),idle;
+  function wake(){bar.classList.remove('idle');clearTimeout(idle);idle=setTimeout(function(){if(document.getElementById('notes').hidden)bar.classList.add('idle');},2600);}
+  document.addEventListener('mousemove',wake);
+  setTimeout(function(){document.getElementById('help').classList.add('gone')},5000);
+
+  document.getElementById('b-prev').onclick=function(e){e.stopPropagation();prev();wake();};
+  document.getElementById('b-next').onclick=function(e){e.stopPropagation();next();wake();};
+  document.getElementById('b-ov').onclick=function(e){e.stopPropagation();overview();};
+  document.getElementById('b-notes').onclick=function(e){e.stopPropagation();toggleNotes();};
+  document.getElementById('b-fs').onclick=function(e){e.stopPropagation();fs();};
+  document.getElementById('notes').onclick=function(e){e.stopPropagation();};
+  bar.onclick=function(e){e.stopPropagation();};
+
+  stage.addEventListener('click',function(e){ if(e.clientX<stage.clientWidth*0.3)prev(); else next(); });
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'||k==='Enter'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'||k==='Backspace'){e.preventDefault();prev();}
+    else if(k==='Home'){go(0)} else if(k==='End'){go(STOPS.length-1)}
+    else if(k==='n'||k==='N'){toggleNotes()}
+    else if(k==='o'||k==='O'){overview()}
+    else if(k==='f'||k==='F'){fs()}
+  });
+  var tx=null,ty=null;
+  stage.addEventListener('touchstart',function(e){tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
+  stage.addEventListener('touchend',function(e){
+    if(tx===null)return;var dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;
+    if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)){dx<0?next():prev();e.preventDefault();}
+    tx=null;
+  });
+  window.addEventListener('resize',function(){apply(cur||boxOf('@all'),0)});
+
+  function start(){
+    var m=/parada=(\d+)/.exec(location.hash);
+    if(location.hash==='#visao'){go(STOPS.length-1);}else go(m?parseInt(m[1],10)-1:0);
+    wake();
+  }
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(start);setTimeout(function(){if(!cur)start()},1500);}else start();
+})();
+</script>
+</body>
+</html>

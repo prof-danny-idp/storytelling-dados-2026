@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Turma Julho/2026 — Storytelling de Dados</title>
+<style>
+  :root {
+    --bg: #f7f7f8;
+    --card-bg: #ffffff;
+    --border: #e2e2e6;
+    --text: #1c1c1f;
+    --text-muted: #6b6b73;
+    --accent: #4f46e5;
+    --accent-hover: #4338ca;
+    --pending-bg: #fef3f2;
+    --pending-border: #fecdca;
+    --pending-text: #b42318;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 2.5rem 1.5rem 4rem;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; }
+  header { margin-bottom: 2.5rem; }
+  h1 { font-size: 1.75rem; margin: 0 0 0.4rem; letter-spacing: -0.02em; }
+  .subtitle { color: var(--text-muted); font-size: 0.95rem; margin: 0; }
+  ul.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.6rem; }
+  li.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.95rem 1.15rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .name { font-weight: 600; font-size: 0.98rem; }
+  .type { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.15rem; }
+  .name-row { display: flex; align-items: center; gap: 0.7rem; }
+  .bat-badge {
+    flex: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    background: #17171a;
+    border: 1.5px solid #d4af37;
+    box-shadow: 0 0 0 1px rgba(212,175,55,0.25);
+  }
+  a.link-btn {
+    text-decoration: none;
+    color: #fff;
+    background: var(--accent);
+    padding: 0.45rem 0.9rem;
+    border-radius: 7px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  a.link-btn:hover { background: var(--accent-hover); }
+  .pending {
+    background: var(--pending-bg);
+    border-color: var(--pending-border);
+  }
+  .pending-tag {
+    color: var(--pending-text);
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: #fff;
+    border: 1px solid var(--pending-border);
+    padding: 0.35rem 0.7rem;
+    border-radius: 7px;
+    white-space: nowrap;
+  }
+  footer { margin-top: 3rem; color: var(--text-muted); font-size: 0.8rem; text-align: center; }
+
+  a.back { display:inline-block; margin-bottom:1.2rem; color:var(--accent); text-decoration:none; font-size:0.88rem; }
+  a.back:hover { text-decoration:underline; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1rem; }
+  a.turma { display:block; background:var(--card-bg); border:1px solid var(--border); border-radius:12px; padding:1.6rem 1.4rem; text-decoration:none; color:var(--text); transition:border-color .15s, transform .15s; }
+  a.turma:hover { border-color:var(--accent); transform:translateY(-2px); }
+  .turma h2 { margin:0 0 .35rem; font-size:1.25rem; }
+  .turma p { margin:0; color:var(--text-muted); font-size:.9rem; }
+  .turma .go { margin-top:1rem; color:var(--accent); font-weight:600; font-size:.88rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="back" href="../">← Voltar</a>
+    <h1>Turma Julho/2026</h1>
+    <p class="subtitle">PCDIA · Mestrado em Administração Pública · IDP</p>
+  </header>
+
+  <ul class="list">
+
+    <li class="card">
+      <div><div class="name">Alexandre Garcia Bezerra</div><div class="type">Link externo</div></div>
+      <a class="link-btn" href="https://alexandregb09.github.io/Dashboard-Medicos-Brasil/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Alexandre Gonçalves Filho</div><div class="type">PDF</div></div>
+      <a class="link-btn" href="../alexandre-goncalves-filho/lgpd-lai.pdf" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Alexandre Hugo Santana Sampaio Netto</div><div class="type">Link externo</div></div>
+      <a class="link-btn" href="https://storytelling-prf-rodovias.vercel.app/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Aliendres Souto Sousa</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="../aliendres-souto-sousa/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Anderson Ferreira da Silva</div><div class="type">Link externo</div></div>
+      <a class="link-btn" href="https://timczbsb.github.io/bombeiros_nacional/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Antonio de Pádua Dantas Diniz Júnior</div><div class="type">PDF</div></div>
+      <a class="link-btn" href="../antonio-de-padua-dantas-diniz-junior/antonio-de-padua-dantas-diniz-junior.pdf" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Augusto Meira Homrich</div><div class="type">Link externo</div></div>
+      <a class="link-btn" href="https://ahomrich-mestrado.github.io/teletrabalho-pgd/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Brena Dourado Pimenta</div><div class="type">Link externo</div></div>
+      <a class="link-btn" href="https://claude.ai/code/artifact/6e9765fa-eb6e-408c-abf2-666b5454963a" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Bruno Aires de Sousa</div><div class="type">PDF</div></div>
+      <a class="link-btn" href="../bruno-aires-de-sousa/turno-invisivel-rodovias.pdf" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Candice Maria Freire Trigueiro Escórcio</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="../candice-maria-freire-trigueiro-escorcio/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Eliane Sá Ricarte</div><div class="type">Link externo</div></div>
+      <a class="link-btn" href="https://elianericarte177.github.io/tarefa-final-storytelling-idp/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Elisangela Andrade Rocha Osório</div><div class="type">Link externo (Tableau)</div></div>
+      <a class="link-btn" href="https://public.tableau.com/app/profile/elisangela.osorio/viz/EvoluodoSaramponoBrasil/saramponobrasil?publish=yes" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Flávia Cristina de Sousa Silva Dias Paz</div><div class="type">PDF</div></div>
+      <a class="link-btn" href="../flavia-cristina-de-sousa-silva-dias-paz/mulheres-tic-evolucao-carreira-publico-privado.pdf" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Flávio Ude Zica Ferraz</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="../flavio-ude-zica-ferraz/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Gustavo Salvador Ferraz Ferreira</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="../gustavo-salvador-ferraz-ferreira/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Haroldo Moscheta Gonçalves</div><div class="type">PDF</div></div>
+      <a class="link-btn" href="../haroldo-moscheta-goncalves/trabalho-storytelling-haroldo.pdf" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Inácio Emiliano Melo Mourão Pinto</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="../inacio-emiliano-melo-mourao-pinto/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Liandro Silva Barcellos</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="../liandro-silva-barcellos/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Lucas Dornelles Cherobim</div><div class="type">Link externo</div></div>
+      <a class="link-btn" href="https://lucasidp.github.io/storytelling_prof_danny/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Michelle Cristina Rodrigues de Jesus</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="../michelle-cristina-rodrigues-de-jesus/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Rafael Ayoroa Ramos</div><div class="type">PDF</div></div>
+      <a class="link-btn" href="../rafael-ayoroa-ramos/boom-bilionario-mounjauro.pdf" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Rafael Monteiro da Cruz</div><div class="type">Link externo</div></div>
+      <a class="link-btn" href="https://docs.google.com/presentation/d/1x3Ec-empjXn7_uLDOt4Itko_WAFDNfh5_Mlh9OKqaOA/edit?usp=sharing" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Robinsom Vladenir Botelho Lucas Filho</div><div class="type">PDF</div></div>
+      <a class="link-btn" href="../robinsom-vladenir-botelho-lucas-filho/diagnostico-fila-ateg-offline.pdf" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Rodrigo Angelos da Costa</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="../rodrigo-angelos-da-costa/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Sérgio Ribeiro Leite</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="../sergio-ribeiro-leite/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Shenia Rocha Ladeira</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="../shenia-rocha-ladeira/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div class="name-row">
+        <span class="bat-badge" aria-hidden="true">🦇</span>
+        <div><div class="name">Renê Estevam Deckers</div><div class="type">Link externo</div></div>
+      </div>
+      <a class="link-btn" href="https://primodeckers.github.io/batman-heros-journey/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+  </ul>
+
+  <footer>Storytelling de Dados · 2026</footer>
+</div>
+</body>
+</html>

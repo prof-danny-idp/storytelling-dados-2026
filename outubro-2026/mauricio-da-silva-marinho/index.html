@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Onde a falha dói</title>
+<meta name="description" content="Dashboard sobre priorização de vulnerabilidades: CVSS, EPSS e KEV medem a falha, mas não o impacto no negócio. Coorte das CVEs publicadas em 2024.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f3f5f8; --surface: #ffffff; --surface-2: #eef2f7;
+    --ink: #142235; --ink-2: #47566b; --ink-3: #6b7889;
+    --rule: #dbe1e9; --neutral-mark: #c3ccd8;
+    --s1: #2B63B0; --s2: #6FA4E6; --apoio: #A9C6EC;
+    --accent: #E36A1E; --accent-ink: #b34f10; --accent-soft: #fdf0e6;
+    --noite: #0E2240; --noite-2: #17386a;
+    --sombra: 0 1px 2px rgba(14,34,64,.05), 0 8px 28px rgba(14,34,64,.06);
+    --sombra-hover: 0 2px 4px rgba(14,34,64,.06), 0 14px 36px rgba(14,34,64,.10);
+    --ease: cubic-bezier(.22, 1, .36, 1);
+    --t-rapido: 180ms; --t-medio: 450ms; --t-longo: 750ms;
+    --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --sans: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #0f141b; --surface: #18202a; --surface-2: #1f2935;
+      --ink: #eef2f7; --ink-2: #b9c4d2; --ink-3: #8e9bab;
+      --rule: #2b3644; --neutral-mark: #3d4a5b;
+      --s1: #2E61B2; --s2: #6497DA; --apoio: #294A75;
+      --accent: #E2671F; --accent-ink: #f29a5e; --accent-soft: #2e2016;
+      --noite: #0A1626; --noite-2: #10294a;
+      --sombra: none; --sombra-hover: 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0f141b; --surface: #18202a; --surface-2: #1f2935;
+    --ink: #eef2f7; --ink-2: #b9c4d2; --ink-3: #8e9bab;
+    --rule: #2b3644; --neutral-mark: #3d4a5b;
+    --s1: #2E61B2; --s2: #6497DA; --apoio: #294A75;
+    --accent: #E2671F; --accent-ink: #f29a5e; --accent-soft: #2e2016;
+    --noite: #0A1626; --noite-2: #10294a;
+    --sombra: none; --sombra-hover: 0 10px 30px rgba(0,0,0,.35);
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 16.5px; line-height: 1.55; font-variant-numeric: tabular-nums; transition: background var(--t-medio) var(--ease), color var(--t-medio) var(--ease); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+  h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.15; margin: 0; }
+  p { margin: 0 0 12px; }
+  .rotulo { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; font-weight: 600; color: var(--ink-3); }
+
+  /* hero */
+  .hero { background: radial-gradient(1200px 500px at 85% -10%, var(--noite-2), transparent 60%), var(--noite); color: #eef2f7; padding: 56px 0 44px; }
+  .hero .rotulo { color: #a9c6ec; }
+  .hero h1 { font-size: clamp(34px, 5.4vw, 56px); margin: 14px 0 16px; max-width: 900px; }
+  .hero h1 em { font-style: normal; color: #f29a5e; }
+  .pergunta { font-family: var(--serif); font-size: clamp(19px, 2.4vw, 23px); color: #dbe6f5; max-width: 780px; border-left: 3px solid var(--accent); padding-left: 16px; margin: 0 0 18px; }
+  .hero p.lead { max-width: 720px; color: #c9d5e5; }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 28px; }
+  .kpi { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 16px; padding: 18px 18px 16px; }
+  :root[data-theme="dark"] .kpi { background: rgba(10,22,38,.7); }
+  .kpi b { display: block; font-size: clamp(28px, 3.4vw, 40px); font-weight: 700; line-height: 1.05; }
+  .kpi b.laranja { color: #f29a5e; }
+  .kpi span { font-size: 13.5px; color: #c9d5e5; }
+  .tema { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,.08); color: #eef2f7; border: 1px solid rgba(255,255,255,.2); border-radius: 999px; padding: 6px 12px; font: 500 13px var(--sans); cursor: pointer; }
+  .hero { position: relative; }
+
+  /* filtros */
+  .filtros { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--rule); }
+  .filtros .wrap { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; padding-top: 10px; padding-bottom: 10px; }
+  @media (max-width: 760px) { .filtros .wrap { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; } }
+  .grupo { display: flex; align-items: center; gap: 8px; flex: none; }
+  .grupo > span { font-size: 12px; color: var(--ink-3); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+  .seg { position: relative; display: inline-flex; background: var(--surface-2); border: 1px solid var(--rule); border-radius: 999px; padding: 3px; }
+  .seg button { position: relative; z-index: 1; border: 0; background: none; color: var(--ink-2); font: 500 13px var(--sans); padding: 5px 11px; border-radius: 999px; cursor: pointer; white-space: nowrap; transition: color var(--t-medio) var(--ease); }
+  .seg button[aria-pressed="true"] { color: #fff; }
+  .seg .ind { position: absolute; top: 3px; bottom: 3px; left: 0; width: 0; border-radius: 999px; background: var(--s1); transition: transform var(--t-medio) var(--ease), width var(--t-medio) var(--ease); }
+  .limpar { flex: none; border: 1px solid var(--rule); background: var(--surface); color: var(--ink-2); border-radius: 999px; padding: 6px 12px; font: 500 13px var(--sans); cursor: pointer; }
+  .resumo { flex: none; font-size: 13px; color: var(--ink-3); }
+  button:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* blocos */
+  main { padding: 36px 0 24px; }
+  .bloco { background: var(--surface); border: 1px solid var(--rule); border-radius: 16px; box-shadow: var(--sombra); padding: 32px clamp(18px, 3.4vw, 36px); margin: 0 0 36px; opacity: 0; transform: translateY(16px); transition: opacity var(--t-longo) var(--ease), transform var(--t-longo) var(--ease), background var(--t-medio) var(--ease), border-color var(--t-medio) var(--ease); }
+  .bloco.visivel { opacity: 1; transform: none; }
+  .bloco .num { font-family: var(--serif); color: var(--accent-ink); font-weight: 700; font-size: 15px; margin-right: 8px; }
+  .bloco h2 { font-size: clamp(24px, 3vw, 31px); margin: 8px 0 10px; max-width: 860px; }
+  .apoio { color: var(--ink-2); max-width: 720px; }
+  .leitura { margin-top: 16px; font-size: 14.5px; color: var(--ink-2); background: var(--surface-2); border-radius: 10px; padding: 10px 14px; }
+  .leitura b { color: var(--ink); }
+  .aviso-n { color: var(--accent-ink); font-weight: 600; }
+  .alerta { border: 1px solid var(--accent); border-left-width: 4px; background: var(--accent-soft); border-radius: 12px; padding: 14px 18px; margin: 18px 0; font-size: 15px; }
+  .alerta b { color: var(--accent-ink); }
+  .grid2 { display: grid; grid-template-columns: 1.25fr 1fr; gap: 28px; align-items: start; }
+  .grid2 > *, .trilho { min-width: 0; }
+  .nota { font-size: 13px; color: var(--ink-3); margin-top: 10px; }
+  .fonte { font-size: 12.5px; color: var(--ink-3); margin-top: 14px; border-top: 1px solid var(--rule); padding-top: 10px; }
+
+  /* barras horizontais */
+  .barras { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+  .linha { display: grid; grid-template-columns: 150px 1fr; gap: 12px; align-items: center; transition: opacity var(--t-medio) var(--ease); }
+  .linha .nome { font-size: 14px; color: var(--ink-2); text-align: right; }
+  .trilho { position: relative; display: flex; flex-direction: column; gap: 4px; }
+  .barra { height: 16px; border-radius: 0 6px 6px 0; transform-origin: left; transition: width var(--t-longo) var(--ease), background var(--t-medio) var(--ease), opacity var(--t-medio) var(--ease); min-width: 2px; position: relative; }
+  .barra .val { position: absolute; left: calc(100% + 8px); top: 50%; transform: translateY(-50%); font-size: 12.5px; color: var(--ink-2); white-space: nowrap; }
+  .clicavel { cursor: pointer; }
+  .barras:hover .linha.clicavel:not(:hover) { opacity: .55; }
+  .legenda { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); margin-top: 12px; }
+  .legenda i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+
+  /* colunas (anos) */
+  .colunas { display: grid; grid-template-columns: repeat(9, 1fr); gap: 10px; align-items: end; height: 240px; margin-top: 24px; border-bottom: 1px solid var(--rule); padding: 0 4px; }
+  .col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+  .col .c { width: 100%; max-width: 64px; border-radius: 6px 6px 0 0; background: var(--apoio); transition: height var(--t-longo) var(--ease); height: 0; }
+  .col.foco .c { background: var(--accent); }
+  .col .v { font-size: 12px; color: var(--ink-2); margin-bottom: 4px; white-space: nowrap; }
+  .anos-rot { display: grid; grid-template-columns: repeat(9, 1fr); gap: 10px; padding: 6px 4px 0; font-size: 12.5px; color: var(--ink-3); text-align: center; }
+
+  /* réguas */
+  .regua { display: grid; grid-template-columns: 210px 1fr; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 1px dashed var(--rule); }
+  .regua:last-child { border-bottom: 0; }
+  .regua .nome b { display: block; font-size: 15px; }
+  .regua .nome span { font-size: 12.5px; color: var(--ink-3); }
+  .regua .trilho .barra { height: 14px; }
+  .cartao-prosp { background: var(--surface-2); border-radius: 14px; padding: 20px; }
+  .cartao-prosp h3 { font-size: 20px; margin-bottom: 8px; }
+  .duelo { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0 6px; }
+  .duelo div { background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 12px; text-align: center; }
+  .duelo b { display: block; font-size: 30px; line-height: 1.1; }
+  .duelo span { font-size: 12.5px; color: var(--ink-2); }
+
+  /* fatos x hipóteses */
+  .fh { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 18px; }
+  .fh > div { border: 1px solid var(--rule); border-radius: 12px; padding: 14px 16px; font-size: 14.5px; }
+  .fh h4 { margin: 0 0 6px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+
+  /* diagrama */
+  .cadeia { width: 100%; height: auto; margin-top: 18px; }
+  .cadeia text { font-family: var(--sans); }
+
+  /* fechamento */
+  .perguntas li { margin-bottom: 8px; }
+  details { margin-top: 12px; }
+  summary { cursor: pointer; font-weight: 600; color: var(--ink-2); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 10px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--rule); }
+  td.n { text-align: right; }
+  .tabela-wrap { overflow-x: auto; }
+  footer { padding: 18px 0 48px; font-size: 13px; color: var(--ink-3); }
+
+  /* tooltip */
+  .tip { position: fixed; z-index: 50; pointer-events: none; background: #0E2240; color: #eef2f7; border-radius: 10px; padding: 9px 12px; font-size: 13px; line-height: 1.4; max-width: 280px; opacity: 0; transform: translateY(4px); transition: opacity 150ms var(--ease), transform 150ms var(--ease); box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+  .tip.on { opacity: 1; transform: none; }
+
+  @media (max-width: 760px) {
+    .kpis { grid-template-columns: 1fr 1fr; }
+    .grid2, .fh { grid-template-columns: 1fr; }
+    .linha { grid-template-columns: 96px 1fr; }
+    .regua { grid-template-columns: 1fr; gap: 6px; }
+    .colunas { gap: 4px; height: 200px; }
+    .anos-rot { gap: 4px; font-size: 11px; }
+    .col .v { font-size: 10px; }
+    .barra .val { font-size: 11.5px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+    .bloco { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+<header class="hero">
+  <button class="tema" id="tema" aria-label="Alternar tema claro e escuro">◐ Tema</button>
+  <div class="wrap">
+    <div class="rotulo">Storytelling com dados · Gestão de vulnerabilidades · CVEs publicadas em 2024</div>
+    <h1>Nenhuma régua técnica diz <em>onde a falha dói</em></h1>
+    <p class="pergunta">CVSS, EPSS e KEV dizem o quanto uma falha é perigosa. Eles dizem o quanto ela importa para a organização?</p>
+    <p class="lead">A área de TI (primeira linha) detecta as falhas; a área de riscos (segunda linha) precisa decidir o que tratar primeiro. Este painel acompanha as quase 40 mil vulnerabilidades publicadas em 2024 e testa as réguas que se usam para priorizar.</p>
+    <div class="kpis">
+      <div class="kpi"><b data-conta="39953">0</b><span>vulnerabilidades (CVEs) publicadas em 2024</span></div>
+      <div class="kpi"><b class="laranja" data-conta="160">0</b><span>delas foram exploradas de fato (KEV), ou 0,4%</span></div>
+      <div class="kpi"><b data-conta="48" data-suf="%">0</b><span>seriam "prioridade" pelo CVSS alto ou crítico</span></div>
+      <div class="kpi"><b data-conta="11" data-suf=" dias">0</b><span>mediana entre a publicação e a entrada no KEV</span></div>
+    </div>
+  </div>
+</header>
+
+<nav class="filtros" aria-label="Filtros">
+  <div class="wrap">
+    <div class="grupo"><span>Trimestre</span><div class="seg" data-dim="tri"></div></div>
+    <div class="grupo"><span>Gravidade (CVSS)</span><div class="seg" data-dim="sev"></div></div>
+    <div class="grupo"><span>EPSS hoje</span><div class="seg" data-dim="eb"></div></div>
+    <button class="limpar" id="limpar">Limpar</button>
+    <div class="resumo" id="resumo" aria-live="polite"></div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <section class="bloco" id="b1" aria-labelledby="t1">
+    <div class="rotulo"><span class="num">01</span>O volume</div>
+    <h2 id="t1">O número de falhas publicadas por ano quase triplicou desde 2017</h2>
+    <p class="apoio">Nenhuma equipe trata tudo. Priorizar não é opção, é a única forma de trabalhar. A coluna em laranja é a coorte que o resto do painel acompanha.</p>
+    <div class="colunas" id="colunas" role="img" aria-label="CVEs publicadas por ano, de 2017 a 2025"></div>
+    <div class="anos-rot" id="anosrot"></div>
+    <div class="alerta"><b>Leitura errada a evitar:</b> mais CVEs não quer dizer que o software ficou pior. Parte do aumento vem de mais organizações autorizadas a publicar CVEs e de mais gente procurando falhas. O que o gráfico mostra é a carga de trabalho, não a qualidade do software.</div>
+    <p class="fonte">Fonte: NIST, National Vulnerability Database (API CVE 2.0), contagem por data de publicação, consulta em 15/10/2026. Os filtros não se aplicam a este gráfico.</p>
+  </section>
+
+  <section class="bloco" id="b2" aria-labelledby="t2">
+    <div class="rotulo"><span class="num">02</span>A gravidade (CVSS)</div>
+    <h2 id="t2">Priorizar pelo CVSS alto pega 9 em cada 10 falhas exploradas, mas manda tratar metade de tudo</h2>
+    <p class="apoio">O CVSS dá uma nota de 0 a 10 à gravidade técnica da falha. Compare quanto cada faixa pesa no total de CVEs e quanto pesa entre as que foram de fato exploradas. <b>Clique numa faixa para filtrar.</b></p>
+    <div class="seg" id="modo2" style="margin-top:12px"><button aria-pressed="true" data-v="pct">%</button><button aria-pressed="false" data-v="abs">Nº absoluto</button><span class="ind"></span></div>
+    <div class="barras" id="barras2" role="img" aria-label="Distribuição por gravidade CVSS: todas as CVEs e as exploradas"></div>
+    <div class="legenda"><span><i style="background:var(--s2)"></i>Todas as CVEs do recorte</span><span><i style="background:var(--s1)"></i>Só as exploradas (KEV)</span></div>
+    <div class="leitura" id="l2"></div>
+    <p class="fonte">Fontes: NVD (nota base CVSS 3.x; quando o NVD não analisou, a nota do CNA que publicou a falha, o que vale para 41% das CVEs) e CISA, Known Exploited Vulnerabilities, versão 2026.10.14.</p>
+  </section>
+
+  <section class="bloco" id="b3" aria-labelledby="t3">
+    <div class="rotulo"><span class="num">03</span>A probabilidade (EPSS)</div>
+    <h2 id="t3">O EPSS parece resolver, mas parte do mérito é olhar pelo retrovisor</h2>
+    <p class="apoio">O EPSS estima a probabilidade de uma falha ser explorada nos próximos 30 dias. Cada régua abaixo pede um <b>esforço</b> (quantas CVEs tratar) e entrega uma <b>cobertura</b> (quantas das exploradas ela pega). Responde ao filtro de trimestre.</p>
+    <div class="grid2">
+      <div>
+        <div id="reguas" role="img" aria-label="Esforço e cobertura de cada régua de priorização"></div>
+        <div class="legenda"><span><i style="background:var(--neutral-mark)"></i>Esforço: % das CVEs a tratar</span><span><i style="background:var(--s1)"></i>Cobertura: % das exploradas</span></div>
+      </div>
+      <div class="cartao-prosp">
+        <div class="rotulo">Teste honesto</div>
+        <h3>Sem o retrovisor, o EPSS antecipou menos que o CVSS</h3>
+        <p style="font-size:14.5px;color:var(--ink-2)">O EPSS de hoje já sabe quais falhas foram exploradas. Para testar sem esse retrovisor, usamos a nota de 1º/1/2025 e olhamos só as <b>35</b> CVEs de 2024 que entraram no KEV <i>depois</i> dessa data. Mesmo esforço para as duas réguas: 19.191 CVEs.</p>
+        <div class="duelo">
+          <div><b>30</b><span>de 35 pegas pelo CVSS alto ou crítico</span></div>
+          <div><b style="color:var(--accent-ink)">23</b><span>de 35 pegas pelo EPSS, com o mesmo esforço</span></div>
+        </div>
+        <p class="nota" style="color:var(--ink-2)">E o limiar mais usado, EPSS ≥ 10%, marcou só 45 CVEs naquela data e pegou 1 das 35.</p>
+        <p class="nota"><span class="aviso-n">Recorte pequeno (n = 35): interprete com cautela.</span> O EPSS daquela data era o modelo v2023.03.01; o modelo atual pode ser melhor. Este teste não mostra que o EPSS "não funciona"; mostra que, aqui, ele não antecipou.</p>
+      </div>
+    </div>
+    <div class="fh">
+      <div><h4>Os dados mostram</h4>Com o EPSS de hoje, 2% das CVEs concentram três quartos das exploradas. No teste sem retrovisor, o CVSS cobriu mais que o EPSS com o mesmo esforço.</div>
+      <div><h4>Os dados não mostram</h4>Que uma régua seja melhor em geral. O teste tem só 35 casos, uma data e um modelo de EPSS antigo. E o KEV registra só a exploração confirmada pela CISA, não toda a exploração.</div>
+    </div>
+    <p class="fonte">Fontes: FIRST/Empirical Security, EPSS (modelo v2026.06.15, nota de 15/10/2026; e v2023.03.01 para o teste), e CISA KEV, versão 2026.10.14.</p>
+  </section>
+
+  <section class="bloco" id="b4" aria-labelledby="t4">
+    <div class="rotulo"><span class="num">04</span>O tempo</div>
+    <h2 id="t4">Metade das falhas exploradas chega ao KEV em até 11 dias, e uma em cada quatro já nasce explorada</h2>
+    <p class="apoio">Quando a falha é explorada no dia em que é publicada (o chamado <i>zero-day</i>), nenhuma régua preditiva chega antes. O que conta é saber, de antemão, onde ela causaria mais dano.</p>
+    <div class="barras" id="barras4" role="img" aria-label="Tempo entre a publicação da CVE e a entrada no KEV"></div>
+    <div class="leitura" id="l4"></div>
+    <p class="fonte">Fontes: NVD (data de publicação) e CISA KEV (data de inclusão). Responde a todos os filtros.</p>
+  </section>
+
+  <section class="bloco" id="b5" aria-labelledby="t5">
+    <div class="rotulo"><span class="num">05</span>O que falta</div>
+    <h2 id="t5">As três réguas medem a falha; nenhuma mede o negócio</h2>
+    <p class="apoio">Risco é probabilidade vezes impacto. CVSS, EPSS e KEV falam da falha, no abstrato. O impacto depende de onde a falha está: em que ativo, em que sistema, sustentando que processo de negócio, com que criticidade. Essa informação existe só dentro da organização, no levantamento de criticidade dos processos (a análise de impacto no negócio, ou BIA).</p>
+    <svg class="cadeia" viewBox="0 0 1000 250" role="img" aria-label="Cadeia conceitual: falha, ativo, sistema, processo de negócio, criticidade no BIA">
+      <defs><marker id="seta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3)"/></marker></defs>
+      <rect x="10" y="20" width="190" height="20" rx="4" fill="var(--s1)" opacity=".18"/>
+      <text x="105" y="35" text-anchor="middle" font-size="13" fill="var(--ink-2)">dados públicos</text>
+      <rect x="210" y="20" width="780" height="20" rx="4" fill="var(--accent)" opacity=".16"/>
+      <text x="600" y="35" text-anchor="middle" font-size="13" fill="var(--accent-ink)">só a organização tem</text>
+      <g font-size="15" font-weight="600">
+        <rect x="10" y="70" width="170" height="80" rx="14" fill="var(--s1)"/><text x="95" y="105" text-anchor="middle" fill="#fff">Falha</text><text x="95" y="127" text-anchor="middle" fill="#fff" font-size="12.5" font-weight="400">CVE · CVSS · EPSS · KEV</text>
+        <rect x="215" y="70" width="170" height="80" rx="14" fill="var(--surface-2)" stroke="var(--rule)"/><text x="300" y="105" text-anchor="middle" fill="var(--ink)">Ativo</text><text x="300" y="127" text-anchor="middle" fill="var(--ink-2)" font-size="12.5" font-weight="400">servidor, estação</text>
+        <rect x="420" y="70" width="170" height="80" rx="14" fill="var(--surface-2)" stroke="var(--rule)"/><text x="505" y="105" text-anchor="middle" fill="var(--ink)">Sistema</text><text x="505" y="127" text-anchor="middle" fill="var(--ink-2)" font-size="12.5" font-weight="400">aplicação que roda nele</text>
+        <rect x="625" y="70" width="170" height="80" rx="14" fill="var(--surface-2)" stroke="var(--rule)"/><text x="710" y="105" text-anchor="middle" fill="var(--ink)">Processo</text><text x="710" y="127" text-anchor="middle" fill="var(--ink-2)" font-size="12.5" font-weight="400">de negócio sustentado</text>
+        <rect x="830" y="70" width="160" height="80" rx="14" fill="var(--accent)"/><text x="910" y="105" text-anchor="middle" fill="#fff">Criticidade</text><text x="910" y="127" text-anchor="middle" fill="#fff" font-size="12.5" font-weight="400">no BIA</text>
+      </g>
+      <g stroke="var(--ink-3)" stroke-width="2" marker-end="url(#seta)"><line x1="182" y1="110" x2="211" y2="110"/><line x1="387" y1="110" x2="416" y2="110"/><line x1="592" y1="110" x2="621" y2="110"/><line x1="797" y1="110" x2="826" y2="110"/></g>
+      <text x="500" y="190" text-anchor="middle" font-size="14" fill="var(--ink-2)">A prioridade de negócio aparece só quando a cadeia inteira está ligada.</text>
+      <text x="500" y="214" text-anchor="middle" font-size="13" fill="var(--ink-3)">Esquema conceitual; não representa dados de nenhuma organização.</text>
+    </svg>
+    <div class="alerta"><b>O próprio CVSS prevê esse ajuste</b> e quase ninguém o usa. A especificação tem métricas "ambientais" (os requisitos de confidencialidade, integridade e disponibilidade, CR, IR e AR) para ajustar a nota "à importância do ativo para a organização", inclusive a função de negócio que ele sustenta. Mas a nota publicada no NVD, usada neste painel, é só a <b>base</b>, igual para todo mundo.</div>
+    <p class="fonte">Fonte: FIRST, <i>CVSS v3.1 Specification Document</i>, seção "Security Requirements (CR, IR, AR)".</p>
+  </section>
+
+  <section class="bloco" id="b6" aria-labelledby="t6">
+    <div class="rotulo"><span class="num">06</span>Por que isso importa agora</div>
+    <h2 id="t6">A regulação já leva a lista de falhas à governança; falta transformá-la em lista de riscos</h2>
+    <p class="apoio">Desde a Resolução CMN nº 5.274, de dezembro de 2025, as instituições financeiras precisam levar ao comitê de riscos e ao conselho os resultados dos testes e análises de vulnerabilidades e os planos de correção, no relatório anual de segurança cibernética. É esse o canal pelo qual o dado sai da primeira linha e chega à segunda. Sem o contexto de negócio, o que chega é uma lista de falhas ordenada por régua técnica, e não uma lista de riscos.</p>
+    <div class="alerta"><b>O dilema:</b> o cruzamento que falta (falhas × ativos × processos × criticidade) é o dado mais sensível da organização. É, literalmente, o mapa de onde atacar dói mais. Como fazer essa informação circular entre as linhas sem que circular aumente o risco? É a pergunta da minha dissertação.</div>
+    <h3 style="font-size:20px;margin:20px 0 8px">Perguntas para a turma</h3>
+    <ol class="perguntas">
+      <li>Na sua organização, quem sabe que um servidor sustenta um processo crítico: a TI, a área de riscos ou ninguém?</li>
+      <li>Se a régua técnica manda tratar metade de tudo, quem decide qual metade fica para depois?</li>
+      <li>Que informação a segunda linha precisaria receber para decidir sobre risco, e não sobre falha?</li>
+    </ol>
+    <p class="fonte">Fonte: Banco Central do Brasil, Resolução CMN nº 5.274, de 18/12/2025 (altera a Resolução CMN nº 4.893/2021), art. 8º, § 1º, V, e § 2º.</p>
+  </section>
+
+  <section class="bloco" id="b7" aria-labelledby="t7">
+    <div class="rotulo"><span class="num">07</span>Método e limites</div>
+    <h2 id="t7">Como os números foram feitos</h2>
+    <ul class="apoio">
+      <li><b>Coorte:</b> as 39.953 CVEs publicadas no NVD em 2024, sem as rejeitadas. Observadas em 15/10/2026, cerca de 21 meses depois.</li>
+      <li><b>Gravidade:</b> a nota base CVSS 3.x; a do NVD quando existe, senão a do CNA. Crítica ≥ 9, alta 7 a 8,9, média 4 a 6,9, baixa abaixo de 4.</li>
+      <li><b>Exploração:</b> a presença no catálogo KEV da CISA. Ele registra só exploração confirmada e tem viés para o que interessa ao governo dos EUA; a exploração real é maior.</li>
+      <li><b>EPSS:</b> a nota de 15/10/2026 nos blocos 02 a 04; a de 1º/1/2025 no teste prospectivo.</li>
+      <li><b>O que o painel não faz:</b> não usa dados de nenhuma organização. O bloco 05 é conceitual.</li>
+    </ul>
+    <details>
+      <summary>Tabela de dados do recorte atual</summary>
+      <div class="tabela-wrap"><table id="tabela"><thead><tr><th>Gravidade</th><th>EPSS hoje</th><th class="n">CVEs</th><th class="n">Exploradas (KEV)</th><th class="n">% exploradas</th></tr></thead><tbody></tbody></table></div>
+    </details>
+  </section>
+</main>
+<footer class="wrap">Mauricio Marinho · Storytelling com Dados, IDP, outubro de 2026 · Dados: NIST NVD, FIRST EPSS, CISA KEV, Banco Central do Brasil.</footer>
+<div class="tip" id="tip" role="tooltip"></div>
+
+<script>
+const D = {"n":39953,"cubo":[["T1","Alta","1% a 10%",0,0,616],["T1","Alta","1% a 10%",1,0,6],["T1","Alta","1% a 10%",1,1,1],["T1","Alta","< 1%",0,0,2343],["T1","Alta","< 1%",1,0,1],["T1","Alta","≥ 10%",0,0,90],["T1","Alta","≥ 10%",1,0,6],["T1","Alta","≥ 10%",1,1,7],["T1","Baixa","1% a 10%",0,0,5],["T1","Baixa","< 1%",0,0,152],["T1","Crítica","1% a 10%",0,0,396],["T1","Crítica","< 1%",0,0,808],["T1","Crítica","≥ 10%",0,0,68],["T1","Crítica","≥ 10%",1,0,6],["T1","Crítica","≥ 10%",1,1,7],["T1","Média","1% a 10%",0,0,189],["T1","Média","< 1%",0,0,3940],["T1","Média","≥ 10%",0,0,37],["T1","Sem CVSS","< 1%",0,0,3],["T2","Alta","1% a 10%",0,0,752],["T2","Alta","1% a 10%",1,0,3],["T2","Alta","1% a 10%",1,1,1],["T2","Alta","< 1%",0,0,3366],["T2","Alta","< 1%",1,0,2],["T2","Alta","≥ 10%",0,0,133],["T2","Alta","≥ 10%",1,0,7],["T2","Alta","≥ 10%",1,1,3],["T2","Baixa","1% a 10%",0,0,8],["T2","Baixa","< 1%",0,0,265],["T2","Baixa","≥ 10%",0,0,1],["T2","Crítica","1% a 10%",0,0,312],["T2","Crítica","1% a 10%",1,0,2],["T2","Crítica","< 1%",0,0,804],["T2","Crítica","≥ 10%",0,0,91],["T2","Crítica","≥ 10%",1,0,11],["T2","Crítica","≥ 10%",1,1,3],["T2","Média","1% a 10%",0,0,190],["T2","Média","< 1%",0,0,5665],["T2","Média","< 1%",1,0,1],["T2","Média","≥ 10%",0,0,40],["T2","Média","≥ 10%",1,0,3],["T2","Sem CVSS","1% a 10%",0,0,5],["T2","Sem CVSS","< 1%",0,0,29],["T2","Sem CVSS","≥ 10%",0,0,1],["T3","Alta","1% a 10%",0,0,522],["T3","Alta","1% a 10%",1,0,9],["T3","Alta","< 1%",0,0,2454],["T3","Alta","≥ 10%",0,0,91],["T3","Alta","≥ 10%",1,0,10],["T3","Alta","≥ 10%",1,1,1],["T3","Baixa","1% a 10%",0,0,3],["T3","Baixa","< 1%",0,0,180],["T3","Crítica","1% a 10%",0,0,263],["T3","Crítica","< 1%",0,0,737],["T3","Crítica","≥ 10%",0,0,78],["T3","Crítica","≥ 10%",1,0,18],["T3","Crítica","≥ 10%",1,1,3],["T3","Média","1% a 10%",0,0,92],["T3","Média","1% a 10%",1,0,2],["T3","Média","< 1%",0,0,3955],["T3","Média","≥ 10%",0,0,23],["T3","Média","≥ 10%",1,0,3],["T3","Sem CVSS","1% a 10%",0,0,4],["T3","Sem CVSS","< 1%",0,0,71],["T3","Sem CVSS","≥ 10%",0,0,4],["T4","Alta","1% a 10%",0,0,533],["T4","Alta","1% a 10%",1,0,5],["T4","Alta","< 1%",0,0,3303],["T4","Alta","< 1%",1,0,2],["T4","Alta","≥ 10%",0,0,90],["T4","Alta","≥ 10%",1,0,10],["T4","Alta","≥ 10%",1,1,2],["T4","Baixa","1% a 10%",0,0,4],["T4","Baixa","< 1%",0,0,188],["T4","Baixa","≥ 10%",1,1,1],["T4","Crítica","1% a 10%",0,0,267],["T4","Crítica","1% a 10%",1,0,2],["T4","Crítica","1% a 10%",1,1,1],["T4","Crítica","< 1%",0,0,982],["T4","Crítica","≥ 10%",0,0,62],["T4","Crítica","≥ 10%",1,0,9],["T4","Crítica","≥ 10%",1,1,7],["T4","Média","1% a 10%",0,0,135],["T4","Média","< 1%",0,0,5215],["T4","Média","< 1%",1,0,1],["T4","Média","≥ 10%",0,0,20],["T4","Média","≥ 10%",1,0,4],["T4","Sem CVSS","1% a 10%",0,0,17],["T4","Sem CVSS","< 1%",0,0,191]],"lag":[["T1","Alta","1% a 10%","1 a 7 dias",3],["T1","Alta","1% a 10%","31 a 180 dias",1],["T1","Alta","1% a 10%","Mais de 180 dias",2],["T1","Alta","1% a 10%","No dia ou antes",1],["T1","Alta","< 1%","8 a 30 dias",1],["T1","Alta","≥ 10%","31 a 180 dias",2],["T1","Alta","≥ 10%","8 a 30 dias",1],["T1","Alta","≥ 10%","Mais de 180 dias",4],["T1","Alta","≥ 10%","No dia ou antes",6],["T1","Crítica","≥ 10%","1 a 7 dias",3],["T1","Crítica","≥ 10%","31 a 180 dias",1],["T1","Crítica","≥ 10%","8 a 30 dias",2],["T1","Crítica","≥ 10%","Mais de 180 dias",5],["T1","Crítica","≥ 10%","No dia ou antes",2],["T2","Alta","1% a 10%","31 a 180 dias",1],["T2","Alta","1% a 10%","No dia ou antes",3],["T2","Alta","< 1%","1 a 7 dias",1],["T2","Alta","< 1%","No dia ou antes",1],["T2","Alta","≥ 10%","1 a 7 dias",3],["T2","Alta","≥ 10%","31 a 180 dias",4],["T2","Alta","≥ 10%","8 a 30 dias",1],["T2","Alta","≥ 10%","Mais de 180 dias",1],["T2","Alta","≥ 10%","No dia ou antes",1],["T2","Crítica","1% a 10%","No dia ou antes",2],["T2","Crítica","≥ 10%","1 a 7 dias",5],["T2","Crítica","≥ 10%","31 a 180 dias",4],["T2","Crítica","≥ 10%","8 a 30 dias",1],["T2","Crítica","≥ 10%","Mais de 180 dias",3],["T2","Crítica","≥ 10%","No dia ou antes",1],["T2","Média","< 1%","No dia ou antes",1],["T2","Média","≥ 10%","31 a 180 dias",1],["T2","Média","≥ 10%","Mais de 180 dias",1],["T2","Média","≥ 10%","No dia ou antes",1],["T3","Alta","1% a 10%","1 a 7 dias",1],["T3","Alta","1% a 10%","8 a 30 dias",1],["T3","Alta","1% a 10%","Mais de 180 dias",1],["T3","Alta","1% a 10%","No dia ou antes",6],["T3","Alta","≥ 10%","1 a 7 dias",3],["T3","Alta","≥ 10%","31 a 180 dias",3],["T3","Alta","≥ 10%","Mais de 180 dias",2],["T3","Alta","≥ 10%","No dia ou antes",3],["T3","Crítica","≥ 10%","1 a 7 dias",3],["T3","Crítica","≥ 10%","31 a 180 dias",7],["T3","Crítica","≥ 10%","8 a 30 dias",6],["T3","Crítica","≥ 10%","Mais de 180 dias",4],["T3","Crítica","≥ 10%","No dia ou antes",1],["T3","Média","1% a 10%","1 a 7 dias",1],["T3","Média","1% a 10%","8 a 30 dias",1],["T3","Média","≥ 10%","Mais de 180 dias",1],["T3","Média","≥ 10%","No dia ou antes",2],["T4","Alta","1% a 10%","1 a 7 dias",1],["T4","Alta","1% a 10%","31 a 180 dias",3],["T4","Alta","1% a 10%","Mais de 180 dias",1],["T4","Alta","< 1%","1 a 7 dias",1],["T4","Alta","< 1%","No dia ou antes",1],["T4","Alta","≥ 10%","1 a 7 dias",4],["T4","Alta","≥ 10%","31 a 180 dias",1],["T4","Alta","≥ 10%","8 a 30 dias",1],["T4","Alta","≥ 10%","Mais de 180 dias",1],["T4","Alta","≥ 10%","No dia ou antes",5],["T4","Baixa","≥ 10%","8 a 30 dias",1],["T4","Crítica","1% a 10%","1 a 7 dias",2],["T4","Crítica","1% a 10%","31 a 180 dias",1],["T4","Crítica","≥ 10%","1 a 7 dias",5],["T4","Crítica","≥ 10%","31 a 180 dias",7],["T4","Crítica","≥ 10%","8 a 30 dias",1],["T4","Crítica","≥ 10%","Mais de 180 dias",1],["T4","Crítica","≥ 10%","No dia ou antes",2],["T4","Média","< 1%","31 a 180 dias",1],["T4","Média","≥ 10%","1 a 7 dias",2],["T4","Média","≥ 10%","Mais de 180 dias",1],["T4","Média","≥ 10%","No dia ou antes",1]],"anos":{"2017":18113,"2018":18154,"2019":18938,"2020":19222,"2021":21950,"2022":26431,"2023":30949,"2024":40704,"2025":49972}};
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+// requestAnimationFrame com reserva: se o navegador não renderizar (aba em segundo plano), usa temporizador
+const raf = cb => { let feito = false; const vai = t => { if (!feito) { feito = true; cb(t ?? performance.now()); } }; try { requestAnimationFrame(vai); } catch (e) {} setTimeout(() => vai(performance.now()), 50); };
+const fmt = new Intl.NumberFormat('pt-BR');
+const pct = (x, d = 1) => (x * 100).toLocaleString('pt-BR', { minimumFractionDigits: d, maximumFractionDigits: d }) + '%';
+const OP = { tri: ['T1', 'T2', 'T3', 'T4'], sev: ['Crítica', 'Alta', 'Média', 'Baixa', 'Sem CVSS'], eb: ['≥ 10%', '1% a 10%', '< 1%'] };
+const LAGS = ['No dia ou antes', '1 a 7 dias', '8 a 30 dias', '31 a 180 dias', 'Mais de 180 dias'];
+const estado = { tri: null, sev: null, eb: null };
+// cubo: [tri, sev, eb, kev, ransom, n]
+const C = D.cubo.map(r => ({ tri: r[0], sev: r[1], eb: r[2], kev: r[3], ransom: r[4], n: r[5] }));
+const L = D.lag.map(r => ({ tri: r[0], sev: r[1], eb: r[2], lag: r[3], n: r[4] }));
+const passa = (r, ignora = []) => Object.keys(estado).every(k => ignora.includes(k) || estado[k] === null || r[k] === estado[k]);
+
+/* tooltip */
+const tip = document.getElementById('tip');
+function liga(el, html) {
+  el.addEventListener('mousemove', e => { tip.innerHTML = html(); tip.classList.add('on'); const x = Math.min(e.clientX + 14, innerWidth - 300); tip.style.left = x + 'px'; tip.style.top = (e.clientY + 14) + 'px'; });
+  el.addEventListener('mouseleave', () => tip.classList.remove('on'));
+  el.addEventListener('focus', () => { const b = el.getBoundingClientRect(); tip.innerHTML = html(); tip.classList.add('on'); tip.style.left = Math.min(b.left, innerWidth - 300) + 'px'; tip.style.top = (b.bottom + 8) + 'px'; });
+  el.addEventListener('blur', () => tip.classList.remove('on'));
+}
+
+/* controles segmentados */
+function moveInd(seg) {
+  const ind = seg.querySelector('.ind'), on = seg.querySelector('button[aria-pressed="true"]');
+  if (!ind || !on) return; ind.style.width = on.offsetWidth + 'px'; ind.style.transform = `translateX(${on.offsetLeft}px)`;
+}
+document.querySelectorAll('.seg[data-dim]').forEach(seg => {
+  const dim = seg.dataset.dim;
+  seg.innerHTML = ['Todos', ...OP[dim]].map(v => `<button data-v="${v}" aria-pressed="${v === 'Todos'}">${v}</button>`).join('') + '<span class="ind"></span>';
+  seg.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; estado[dim] = b.dataset.v === 'Todos' ? null : b.dataset.v; sync(); atualizar(); });
+});
+function sync() {
+  document.querySelectorAll('.seg[data-dim]').forEach(seg => { const v = estado[seg.dataset.dim] ?? 'Todos'; seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v)); moveInd(seg); });
+}
+document.getElementById('limpar').onclick = () => { Object.keys(estado).forEach(k => estado[k] = null); sync(); atualizar(); };
+let modo2 = 'pct';
+document.getElementById('modo2').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; modo2 = b.dataset.v; e.currentTarget.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); moveInd(e.currentTarget); r2(); });
+
+/* números que contam */
+function conta(el, alvo, suf = '') {
+  const de = +(el.dataset.atual || 0); el.dataset.atual = alvo;
+  if (RM) { el.textContent = fmt.format(alvo) + suf; return; }
+  const t0 = performance.now(), dur = 800;
+  const passo = t => { const p = Math.min(1, (t - t0) / dur), k = 1 - Math.pow(1 - p, 3); el.textContent = fmt.format(Math.round(de + (alvo - de) * k)) + suf; if (p < 1) raf(passo); };
+  raf(passo);
+}
+
+/* 01 anos */
+function r1() {
+  const anos = Object.keys(D.anos), max = Math.max(...Object.values(D.anos));
+  const col = document.getElementById('colunas');
+  col.innerHTML = anos.map(a => `<div class="col ${a === '2024' ? 'foco' : ''}" tabindex="0"><div class="v">${fmt.format(Math.round(D.anos[a] / 100) / 10).replace(/$/, ' mil')}</div><div class="c" data-h="${D.anos[a] / max * 100}"></div></div>`).join('');
+  document.getElementById('anosrot').innerHTML = anos.map(a => `<div>${a}</div>`).join('');
+  col.querySelectorAll('.col').forEach((c, i) => liga(c, () => `<b>${anos[i]}</b><br>${fmt.format(D.anos[anos[i]])} CVEs publicadas`));
+  raf(() => col.querySelectorAll('.c').forEach(c => c.style.height = `calc(${c.dataset.h}% - 22px)`));
+}
+
+/* lista de barras com FLIP */
+function barras(cont, itens, opts) {
+  // itens: [{chave, nome, series:[{valor, rotulo, cor}], tip, foco}]
+  const antes = new Map([...cont.children].map(el => [el.dataset.k, el.getBoundingClientRect().top]));
+  const max = opts.max ?? Math.max(...itens.flatMap(i => i.series.map(s => s.valor)), 1e-9);
+  itens.forEach(it => {
+    let el = cont.querySelector(`[data-k="${CSS.escape(it.chave)}"]`);
+    if (!el) {
+      el = document.createElement('div'); el.className = 'linha' + (opts.clique ? ' clicavel' : ''); el.dataset.k = it.chave; el.tabIndex = 0;
+      el.innerHTML = `<div class="nome"></div><div class="trilho">${it.series.map(() => '<div class="barra" style="width:0"><span class="val"></span></div>').join('')}</div>`;
+      if (opts.clique) { el.addEventListener('click', () => opts.clique(it.chave)); el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); opts.clique(it.chave); } }); el.title = 'clique para filtrar'; }
+      liga(el, () => el._tip()); cont.appendChild(el);
+    }
+    el._tip = it.tip; el.querySelector('.nome').textContent = it.nome;
+    const bs = el.querySelectorAll('.barra');
+    it.series.forEach((s, j) => { const b = bs[j]; raf(() => { b.style.width = `calc(${(s.valor / max) * 85}% )`; }); b.style.background = it.foco === false ? 'var(--neutral-mark)' : s.cor; b.querySelector('.val').textContent = s.rotulo; });
+  });
+  itens.forEach(it => cont.appendChild(cont.querySelector(`[data-k="${CSS.escape(it.chave)}"]`)));
+  if (!RM) [...cont.children].forEach(el => { const t0 = antes.get(el.dataset.k); if (t0 == null) return; const dy = t0 - el.getBoundingClientRect().top; if (!dy) return; el.style.transition = 'none'; el.style.transform = `translateY(${dy}px)`; raf(() => { el.style.transition = `transform var(--t-longo) var(--ease), opacity var(--t-medio) var(--ease)`; el.style.transform = ''; }); });
+}
+
+/* 02 gravidade */
+function r2() {
+  const base = C.filter(r => passa(r, ['sev']));
+  const tot = base.reduce((a, r) => a + r.n, 0), totk = base.reduce((a, r) => a + r.n * r.kev, 0);
+  const itens = OP.sev.map(s => {
+    const n = base.filter(r => r.sev === s).reduce((a, r) => a + r.n, 0), k = base.filter(r => r.sev === s).reduce((a, r) => a + r.n * r.kev, 0);
+    const a = modo2 === 'pct' ? (tot ? n / tot : 0) : n, b = modo2 === 'pct' ? (totk ? k / totk : 0) : k;
+    return { chave: s, nome: s, foco: estado.sev === null || estado.sev === s,
+      series: [{ valor: a, cor: 'var(--s2)', rotulo: modo2 === 'pct' ? pct(a) : fmt.format(n) }, { valor: b, cor: 'var(--s1)', rotulo: modo2 === 'pct' ? pct(b) : fmt.format(k) }],
+      tip: () => `<b>CVSS ${s}</b><br>${fmt.format(n)} CVEs (${pct(tot ? n / tot : 0)} do recorte)<br>${fmt.format(k)} exploradas (${pct(totk ? k / totk : 0)} das exploradas)<br>Taxa de exploração: ${pct(n ? k / n : 0, 2)}` };
+  });
+  barras(document.getElementById('barras2'), itens, { max: modo2 === 'pct' ? 1 : undefined, clique: s => { estado.sev = estado.sev === s ? null : s; sync(); atualizar(); } });
+  const sel = C.filter(r => passa(r)); const n = sel.reduce((a, r) => a + r.n, 0), k = sel.reduce((a, r) => a + r.n * r.kev, 0);
+  const hc = base.filter(r => r.sev === 'Crítica' || r.sev === 'Alta'), nhc = hc.reduce((a, r) => a + r.n, 0), khc = hc.reduce((a, r) => a + r.n * r.kev, 0);
+  document.getElementById('l2').innerHTML = `No recorte atual: <b>${fmt.format(n)}</b> CVEs, <b>${fmt.format(k)}</b> exploradas (${pct(n ? k / n : 0, 2)}). A régua "CVSS alto ou crítico" manda tratar <b>${pct(tot ? nhc / tot : 0, 0)}</b> do recorte e cobre <b>${pct(totk ? khc / totk : 0, 0)}</b> das exploradas.` + (totk < 30 ? ' <span class="aviso-n">Recorte pequeno: interprete com cautela.</span>' : '');
+}
+
+/* 03 réguas */
+function r3() {
+  const base = C.filter(r => estado.tri === null || r.tri === estado.tri);
+  const tot = base.reduce((a, r) => a + r.n, 0), totk = base.reduce((a, r) => a + r.n * r.kev, 0);
+  const R = [
+    ['cvss79', 'CVSS alto ou crítico', 'nota ≥ 7', r => r.sev === 'Crítica' || r.sev === 'Alta'],
+    ['cvss9', 'Só CVSS crítico', 'nota ≥ 9', r => r.sev === 'Crítica'],
+    ['epss10', 'EPSS de hoje ≥ 10%', 'com retrovisor', r => r.eb === '≥ 10%'],
+    ['epss1', 'EPSS de hoje ≥ 1%', 'com retrovisor', r => r.eb !== '< 1%'],
+  ];
+  const cont = document.getElementById('reguas');
+  if (!cont.children.length) cont.innerHTML = R.map(x => `<div class="regua" data-k="${x[0]}" tabindex="0"><div class="nome"><b>${x[1]}</b><span>${x[2]}</span></div><div class="trilho"><div class="barra" style="width:0;background:var(--neutral-mark)"><span class="val"></span></div><div class="barra" style="width:0;background:var(--s1)"><span class="val"></span></div></div></div>`).join('');
+  R.forEach(x => {
+    const s = base.filter(x[3]), n = s.reduce((a, r) => a + r.n, 0), k = s.reduce((a, r) => a + r.n * r.kev, 0);
+    const el = cont.querySelector(`[data-k="${x[0]}"]`), bs = el.querySelectorAll('.barra');
+    const e = tot ? n / tot : 0, c = totk ? k / totk : 0;
+    raf(() => { bs[0].style.width = `calc(${e * 52}%)`; bs[1].style.width = `calc(${c * 52}%)`; });
+    bs[0].querySelector('.val').textContent = `${pct(e, 1)} das CVEs (${fmt.format(n)})`;
+    bs[1].querySelector('.val').textContent = `${pct(c, 0)} das exploradas (${fmt.format(k)})`;
+    if (!el._lig) { liga(el, () => el._t); el._lig = 1; }
+    el._t = `<b>${x[1]}</b><br>Esforço: ${fmt.format(n)} CVEs (${pct(e)})<br>Cobertura: ${fmt.format(k)} de ${fmt.format(totk)} exploradas (${pct(c)})<br>Eficiência: ${pct(n ? k / n : 0, 2)} das tratadas eram exploradas`;
+  });
+}
+
+/* 04 tempo */
+function r4() {
+  const sel = L.filter(r => passa(r)); const tot = sel.reduce((a, r) => a + r.n, 0);
+  const itens = LAGS.map((g, i) => { const n = sel.filter(r => r.lag === g).reduce((a, r) => a + r.n, 0); return { chave: g, nome: g, series: [{ valor: tot ? n / tot : 0, cor: i < 2 ? 'var(--accent)' : 'var(--s1)', rotulo: `${pct(tot ? n / tot : 0, 0)} (${fmt.format(n)})` }], tip: () => `<b>${g}</b><br>${fmt.format(n)} de ${fmt.format(tot)} exploradas (${pct(tot ? n / tot : 0)})` }; });
+  barras(document.getElementById('barras4'), itens, { max: 1 });
+  const ate7 = sel.filter(r => r.lag === LAGS[0] || r.lag === LAGS[1]).reduce((a, r) => a + r.n, 0);
+  document.getElementById('l4').innerHTML = `No recorte atual: <b>${fmt.format(tot)}</b> CVEs exploradas; <b>${pct(tot ? ate7 / tot : 0, 0)}</b> entraram no KEV em até 7 dias da publicação (em laranja).` + (tot < 30 ? ' <span class="aviso-n">Recorte pequeno: interprete com cautela.</span>' : '');
+}
+
+/* tabela e resumo */
+function rTab() {
+  const sel = C.filter(r => passa(r)); const linhas = [];
+  OP.sev.forEach(s => OP.eb.forEach(b => { const g = sel.filter(r => r.sev === s && r.eb === b); const n = g.reduce((a, r) => a + r.n, 0), k = g.reduce((a, r) => a + r.n * r.kev, 0); if (n) linhas.push(`<tr><td>${s}</td><td>${b}</td><td class="n">${fmt.format(n)}</td><td class="n">${fmt.format(k)}</td><td class="n">${pct(k / n, 2)}</td></tr>`); }));
+  document.querySelector('#tabela tbody').innerHTML = linhas.join('');
+  const n = sel.reduce((a, r) => a + r.n, 0); const ativos = Object.entries(estado).filter(([, v]) => v).map(([, v]) => v);
+  document.getElementById('resumo').textContent = `Mostrando ${fmt.format(n)} de ${fmt.format(D.n)} CVEs` + (ativos.length ? ' · ' + ativos.join(' · ') : '');
+}
+function atualizar() { r2(); r3(); r4(); rTab(); }
+
+/* tema */
+document.getElementById('tema').onclick = () => { const atual = document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); document.documentElement.dataset.theme = atual === 'dark' ? 'light' : 'dark'; try { localStorage.setItem('tema', document.documentElement.dataset.theme); } catch (e) {} };
+try { const t = localStorage.getItem('tema'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+
+/* entrada dos blocos */
+if ('IntersectionObserver' in window && !RM) {
+  const io = new IntersectionObserver(es => es.filter(e => e.isIntersecting).forEach((e, i) => { e.target.style.transitionDelay = i * 60 + 'ms'; e.target.classList.add('visivel'); io.unobserve(e.target); }), { threshold: 0.06 });
+  document.querySelectorAll('.bloco').forEach(b => io.observe(b));
+} else document.querySelectorAll('.bloco').forEach(b => b.classList.add('visivel'));
+
+document.querySelectorAll('[data-conta]').forEach(el => conta(el, +el.dataset.conta, el.dataset.suf || ''));
+r1(); sync(); atualizar();
+addEventListener('resize', () => document.querySelectorAll('.seg').forEach(moveInd));
+document.fonts && document.fonts.ready.then(() => document.querySelectorAll('.seg').forEach(moveInd));
+</script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Turma Outubro/2026 — Storytelling de Dados</title>
+<style>
+  :root {
+    --bg: #f7f7f8;
+    --card-bg: #ffffff;
+    --border: #e2e2e6;
+    --text: #1c1c1f;
+    --text-muted: #6b6b73;
+    --accent: #4f46e5;
+    --accent-hover: #4338ca;
+    --pending-bg: #fef3f2;
+    --pending-border: #fecdca;
+    --pending-text: #b42318;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 2.5rem 1.5rem 4rem;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; }
+  header { margin-bottom: 2.5rem; }
+  h1 { font-size: 1.75rem; margin: 0 0 0.4rem; letter-spacing: -0.02em; }
+  .subtitle { color: var(--text-muted); font-size: 0.95rem; margin: 0; }
+  ul.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.6rem; }
+  li.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.95rem 1.15rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .name { font-weight: 600; font-size: 0.98rem; }
+  .type { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.15rem; }
+  .name-row { display: flex; align-items: center; gap: 0.7rem; }
+  .bat-badge {
+    flex: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    background: #17171a;
+    border: 1.5px solid #d4af37;
+    box-shadow: 0 0 0 1px rgba(212,175,55,0.25);
+  }
+  a.link-btn {
+    text-decoration: none;
+    color: #fff;
+    background: var(--accent);
+    padding: 0.45rem 0.9rem;
+    border-radius: 7px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  a.link-btn:hover { background: var(--accent-hover); }
+  .pending {
+    background: var(--pending-bg);
+    border-color: var(--pending-border);
+  }
+  .pending-tag {
+    color: var(--pending-text);
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: #fff;
+    border: 1px solid var(--pending-border);
+    padding: 0.35rem 0.7rem;
+    border-radius: 7px;
+    white-space: nowrap;
+  }
+  footer { margin-top: 3rem; color: var(--text-muted); font-size: 0.8rem; text-align: center; }
+
+  a.back { display:inline-block; margin-bottom:1.2rem; color:var(--accent); text-decoration:none; font-size:0.88rem; }
+  a.back:hover { text-decoration:underline; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1rem; }
+  a.turma { display:block; background:var(--card-bg); border:1px solid var(--border); border-radius:12px; padding:1.6rem 1.4rem; text-decoration:none; color:var(--text); transition:border-color .15s, transform .15s; }
+  a.turma:hover { border-color:var(--accent); transform:translateY(-2px); }
+  .turma h2 { margin:0 0 .35rem; font-size:1.25rem; }
+  .turma p { margin:0; color:var(--text-muted); font-size:.9rem; }
+  .turma .go { margin-top:1rem; color:var(--accent); font-weight:600; font-size:.88rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="back" href="../">← Voltar</a>
+    <h1>Turma Outubro/2026</h1>
+    <p class="subtitle">PCDIA · Mestrado em Administração Pública · IDP</p>
+  </header>
+
+  <ul class="list">
+    <li class="card">
+      <div><div class="name">Ana Lécia Hanel Rorato</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="ana-lecia-hanel-rorato/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Breno Preischardt Zanferdini de Almeida</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="breno-preischardt-zanferdini-de-almeida/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Fabiana da Silva Guimarães Milhomem</div><div class="type">Link externo</div></div>
+      <a class="link-btn" href="https://raw.githack.com/fabianamilhomem/storytelling-trabalhofinal/main/site-3d/index.html" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Fabricio Fernandes Santana</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="fabricio-fernandes-santana/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Giovanni Brígido Bezerra Cardoso</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="giovanni-brigido-bezerra-cardoso/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Igo Costa</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="igo-costa/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Iris Souza dos Santos Cardoso</div><div class="type">Link externo</div></div>
+      <a class="link-btn" href="https://irissouza7.github.io/Mestrado_Projeto_SINAPI/dashboard_sinapi.html" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Kelsen de Moura Espíndola</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="kelsen-de-moura-espindola/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Luan Coli Dantas</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="luan-coli-dantas/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Luciana Mara de Castro Moura</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="luciana-mara-de-castro-moura/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Mairton Damasceno Cunha</div><div class="type">Link externo</div></div>
+      <a class="link-btn" href="https://mairton.github.io/enem-classification-dashboard/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Marcio Alexandre Barbosa</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="marcio-alexandre-barbosa/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Mauricio da Silva Marinho</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="mauricio-da-silva-marinho/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Paulo Ceser de Siqueira Neves</div><div class="type">HTML + áudio</div></div>
+      <a class="link-btn" href="paulo-ceser-de-siqueira-neves/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Pedro Ivo Guimarães Póvoa</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="pedro-ivo-guimaraes-povoa/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Rafael Carvalho dos Santos</div><div class="type">Link externo</div></div>
+      <a class="link-btn" href="https://a-politica-dos-numeros-rafael.rafael7carvalho.chatgpt.site/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Ricardo Carvalho da Costa</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="ricardo-carvalho-da-costa/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Roger Luiz Itai</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="roger-luiz-itai/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Sergio Parca dos Santos</div><div class="type">HTML</div></div>
+      <a class="link-btn" href="sergio-parca-dos-santos/" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+    <li class="card">
+      <div><div class="name">Tiago</div><div class="type">Link externo</div></div>
+      <a class="link-btn" href="https://sob-a-cupula.67-205-189-150.sslip.io" target="_blank" rel="noopener">Ver trabalho</a>
+    </li>
+  </ul>
+
+  <footer>Storytelling de Dados · 2026</footer>
+</div>
+</body>
+</html>

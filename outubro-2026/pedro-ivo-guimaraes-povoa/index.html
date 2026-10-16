@@ -1,0 +1,2021 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Storytelling — Avaliação de Arquiteturas RAG em Documentos Jurídicos</title>
+  <meta name="description" content="Dashboard de Storytelling com Dados Reais: Confronto Empírico de 14 Pipelines de RAG e Geração Multiagente em Documentos Jurídico-Administrativos.">
+  
+  <!-- Fontes Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Apache ECharts V5 via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+
+  <style>
+    :root {
+      --bg-primary: #090d16;
+      --bg-secondary: #0f172a;
+      --bg-card: rgba(17, 24, 39, 0.75);
+      --bg-card-hover: rgba(30, 41, 59, 0.85);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(56, 189, 248, 0.3);
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
+      /* Paleta Semântica Intencional */
+      --color-winner: #10b981;      /* Esmeralda para Vencedor / Eficiência Ótima */
+      --color-hybrid: #06b6d4;      /* Ciano para RAG Híbrido */
+      --color-dense: #64748b;       /* Cinza para RAG Denso tradicional */
+      --color-graph: #a855f7;       /* Roxo para GraphRAG */
+      --color-warning: #f59e0b;     /* Âmbar para Alertas de Custo */
+      --color-danger: #ef4444;      /* Vermelho para Colapso de Métrica / Latência Excessiva */
+      --color-lexical: #3b82f6;     /* Azul para BM25 Lexical */
+      
+      --font-heading: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      background-image: 
+        radial-gradient(circle at 15% 10%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 50% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+      background-attachment: fixed;
+      padding-bottom: 80px;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header e Pergunta Central */
+    header {
+      padding: 40px 0 24px 0;
+      border-bottom: 1px solid var(--border-color);
+      position: relative;
+    }
+
+    .meta-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .institution-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 6px 14px;
+      border-radius: 9999px;
+      border: 1px solid var(--border-color);
+      font-weight: 500;
+      color: #38bdf8;
+    }
+
+    .author-info {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .author-info span strong {
+      color: var(--text-main);
+    }
+
+    /* Card Pergunta Central */
+    .central-question-card {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.7));
+      border: 1px solid var(--border-accent);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5), 0 0 20px rgba(6, 182, 212, 0.1);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+
+    .central-question-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      background: linear-gradient(to bottom, #06b6d4, #10b981);
+    }
+
+    .question-badge {
+      display: inline-block;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.15);
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+
+    .central-question-title {
+      font-family: var(--font-heading);
+      font-size: 1.85rem;
+      font-weight: 700;
+      line-height: 1.3;
+      color: #ffffff;
+      margin-bottom: 12px;
+    }
+
+    .central-question-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 1000px;
+    }
+
+    /* Barra de Badges Metodológicos */
+    .badges-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .badge-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      color: #cbd5e1;
+    }
+    .badge-item.highlight {
+      border-color: rgba(16, 185, 129, 0.4);
+      background: rgba(16, 185, 129, 0.08);
+      color: #34d399;
+    }
+
+    /* Sticky Navigation & Oral Timer Bar */
+    .sticky-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(9, 13, 22, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 0;
+      margin-bottom: 40px;
+    }
+
+    .toolbar-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .nav-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-btn.active {
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+
+    /* Timer Widget */
+    .timer-widget {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(15, 23, 42, 0.9);
+      padding: 6px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+    }
+
+    .timer-display {
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #f8fafc;
+      letter-spacing: 0.05em;
+      min-width: 60px;
+    }
+    .timer-display.warning {
+      color: #f59e0b;
+      animation: pulse 1s infinite;
+    }
+    .timer-display.danger {
+      color: #ef4444;
+      animation: pulse 0.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 6px;
+    }
+
+    .timer-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .timer-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+
+
+    /* Headline KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 20px;
+      margin-bottom: 48px;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 22px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+      position: relative;
+    }
+    .kpi-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 14px;
+      right: 14px;
+      height: 2px;
+      background: var(--card-accent, rgba(255, 255, 255, 0.1));
+      border-radius: 2px;
+    }
+
+    .kpi-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .kpi-value {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .kpi-desc {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+    .kpi-desc strong {
+      color: var(--text-muted);
+    }
+
+    /* Seções Narrativas */
+    .narrative-section {
+      margin-bottom: 64px;
+      scroll-margin-top: 100px;
+    }
+
+    .section-header {
+      margin-bottom: 24px;
+    }
+
+    .act-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #38bdf8;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-family: var(--font-heading);
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
+
+    .section-summary {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 960px;
+    }
+
+    /* Cards de Gráficos (com Título-Conclusão Obrigatório) */
+    .chart-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 28px;
+      box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.4);
+    }
+
+    .chart-header {
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+    }
+
+    /* Título que comunica uma CONCLUSÃO */
+    .chart-conclusion-title {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .chart-conclusion-title .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .chart-subtitle-narrative {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .chart-box {
+      width: 100%;
+      height: 480px;
+    }
+
+    .chart-footer-note {
+      margin-top: 16px;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-family: var(--font-mono);
+      border-top: 1px dashed rgba(255, 255, 255, 0.05);
+      padding-top: 12px;
+    }
+
+    /* Tabela de Dados Formatada */
+    .data-table-container {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background: rgba(15, 23, 42, 0.6);
+      margin-top: 24px;
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.875rem;
+    }
+
+    table.data-table th, table.data-table td {
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    table.data-table th {
+      background: rgba(255, 255, 255, 0.03);
+      font-weight: 600;
+      color: #e2e8f0;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    table.data-table tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    table.data-table tr.winner-row {
+      background: rgba(16, 185, 129, 0.08);
+      font-weight: 600;
+    }
+    table.data-table tr.winner-row td:first-child {
+      color: #34d399;
+    }
+
+    .tag-pill {
+      display: inline-block;
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+    .tag-winner { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .tag-warning { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    .tag-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .tag-neutral { background: rgba(255, 255, 255, 0.1); color: #cbd5e1; }
+
+    /* Callouts Narrativos / Insights */
+    .insight-card {
+      background: rgba(15, 23, 42, 0.8);
+      border-left: 4px solid #06b6d4;
+      border-radius: 0 12px 12px 0;
+      padding: 18px 24px;
+      margin-top: 20px;
+    }
+    .insight-card.winner {
+      border-left-color: var(--color-winner);
+    }
+    .insight-card.danger {
+      border-left-color: var(--color-danger);
+    }
+
+    .insight-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .insight-body {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* Glossário e FAQ */
+    .accordion-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .accordion-item:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .accordion-trigger {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 18px 22px;
+      text-align: left;
+      font-family: var(--font-heading);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .accordion-trigger span.icon {
+      font-size: 1.2rem;
+      transition: transform 0.2s;
+      color: #38bdf8;
+    }
+
+    .accordion-content {
+      padding: 0 22px 20px 22px;
+      color: var(--text-muted);
+      font-size: 0.925rem;
+      line-height: 1.6;
+      display: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      margin-top: 8px;
+      padding-top: 14px;
+    }
+
+    .accordion-item.open .accordion-content {
+      display: block;
+    }
+    .accordion-item.open .accordion-trigger span.icon {
+      transform: rotate(45deg);
+    }
+
+    /* Glossário Grid */
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .glossary-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .glossary-term {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #38bdf8;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .glossary-def {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Busca de Glossário */
+    .search-box {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 18px;
+      color: #ffffff;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      outline: none;
+      margin-bottom: 16px;
+      transition: border-color 0.2s;
+    }
+    .search-box:focus {
+      border-color: #38bdf8;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 40px 0;
+      margin-top: 80px;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+    footer a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      .central-question-title {
+        font-size: 1.4rem;
+      }
+      .toolbar-content {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .chart-box {
+        height: 380px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="container">
+      <div class="meta-bar">
+        <div class="institution-tag">
+          🏛️ IDP — Mestrado em Ciência de Dados e IA | Storytelling com Dados
+        </div>
+        <div class="author-info">
+          <span>Pesquisador: <strong>Pedro Ivo Guimarães Póvoa</strong></span>
+          <span>Orientador: <strong>Prof. Dr. Alex Lopes Pereira</strong></span>
+          <span>Data: <strong>Outubro/2026</strong></span>
+        </div>
+      </div>
+
+      <!-- PERGUNTA CENTRAL OBRIGATÓRIA -->
+      <div class="central-question-card">
+        <span class="question-badge">Pergunta Central da Investigação</span>
+        <h1 class="central-question-title">
+          Arquiteturas complexas de IA justificam seu custo? Um confronto empírico de 14 pipelines de RAG e Geração Multiagente em documentos jurídicos
+        </h1>
+        <p class="central-question-subtitle">
+          Avaliação confirmatória e exploratória sobre corpus real de controle interno e auditoria pública (CNJ, TCU e legislação federal), analisando o mito da complexidade arquitetural frente ao rigor estatístico.
+        </p>
+
+        <div class="badges-row">
+          <div class="badge-item highlight">✓ 450 Perguntas Avaliadas</div>
+          <div class="badge-item highlight">✓ Teste Wilcoxon Signed-Rank Pareado</div>
+          <div class="badge-item highlight">✓ Correção de Bonferroni</div>
+          <div class="badge-item">Arco Narrativo: Contexto ➔ Tensão ➔ Resolução</div>
+          <div class="badge-item">Critério: Navalha de Ockham</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- STICKY TOOLBAR & TIMER 10 MINUTOS -->
+  <div class="sticky-toolbar">
+    <div class="container toolbar-content">
+      <nav class="nav-links">
+        <a href="#ato1" class="nav-btn active">1. Contexto</a>
+        <a href="#ato2" class="nav-btn">2. Tensão: Retrieval</a>
+        <a href="#ato3" class="nav-btn">3. Tensão: Geração</a>
+        <a href="#veredito" class="nav-btn">4. Resolução</a>
+        <a href="#glossario" class="nav-btn">Glossário</a>
+        <a href="#faq" class="nav-btn">FAQ</a>
+      </nav>
+
+      <!-- Cronômetro Oficial para os 10 Minutos -->
+      <div class="timer-widget" title="Cronômetro para apresentação oral de 10 minutos cravados">
+        <span style="font-size:0.8rem; color:var(--text-dim);">Tempo de Apresentação:</span>
+        <div class="timer-display" id="timerDisplay">10:00</div>
+        <div class="timer-controls">
+          <button class="timer-btn" id="btnStartTimer">▶ Iniciar</button>
+          <button class="timer-btn" id="btnResetTimer">↺ Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- HEADLINE KPIS -->
+    <div class="kpi-grid">
+      <div class="kpi-card" style="--card-accent: #06b6d4;">
+        <div class="kpi-label">Volume de Teste Pareado</div>
+        <div class="kpi-value">450</div>
+        <div class="kpi-desc">Perguntas sobre <strong>300 documentos</strong> do corpus em <strong>14 condições</strong> controladas.</div>
+      </div>
+
+      <div class="kpi-card" style="--card-accent: #10b981;">
+        <div class="kpi-label">Salto de Precisão (c6 Híbrido s/ Rerank vs c2 Híbrido c/ Rerank)</div>
+        <div class="kpi-value" style="color: #34d399;">+81,8%</div>
+        <div class="kpi-desc">Remover o reranker elevou Context Precision de 0,32 para 0,59 (p=1,2e-45).</div>
+      </div>
+
+      <div class="kpi-card" style="--card-accent: #f59e0b;">
+        <div class="kpi-label">Sobrecusto Multiagente</div>
+        <div class="kpi-value" style="color: #fbbf24;">+62,6%</div>
+        <div class="kpi-desc">Aumento em latência (76s → 124s) sem ganho de fidelidade (p=0,3425).</div>
+      </div>
+
+      <div class="kpi-card" style="--card-accent: #ef4444;">
+        <div class="kpi-label">Colapso do c3 GraphRAG Puro</div>
+        <div class="kpi-value" style="color: #f87171;">0,1400</div>
+        <div class="kpi-desc">Context Recall despencou de 0,90 para 0,14 pela perda do texto <em>verbatim</em>.</div>
+      </div>
+    </div>
+
+    <!-- O PROBLEMA & O MITO -->
+    <section id="ato1" class="narrative-section">
+      <div class="section-header">
+        <span class="act-tag">1. Contexto • Escala do Impacto & Linha de Base</span>
+        <h2 class="section-title">O Dilema da IA no Setor Público: A Ilusão da Hipercomplexidade</h2>
+        <p class="section-summary">
+          Em auditoria pública e conformidade legal, alucinações não são toleráveis. A literatura e o mercado frequentemente vendem a promessa de que combinar grafos de conhecimento gigantescos e orquestrações com dezenas de agentes resolve qualquer problema. Mas será que essa complexidade se sustenta quando submetida ao método científico com dados empíricos reais?
+        </p>
+      </div>
+
+      <!-- PROBLEMA FORMAL DE PESQUISA (CAP. 1 DA DISSERTAÇÃO) -->
+      <div class="insight-card" style="border-left-color: #38bdf8; background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.7)); margin-bottom: 20px;">
+        <div class="insight-title" style="color: #38bdf8; display: flex; align-items: center; gap: 8px; font-size: 1.05rem;">
+          <span>🔬 O Problema de Pesquisa da Dissertação</span>
+        </div>
+        <div class="insight-body" style="font-size: 0.95rem; line-height: 1.6; color: #e2e8f0; margin-top: 8px;">
+          <p style="font-style: italic; border-left: 3px solid #38bdf8; padding-left: 14px; margin-bottom: 14px; color: #f8fafc; font-size: 1rem;">
+            "Diante da limitação da busca vetorial pura para conectar informação distribuída entre documentos jurídico-administrativos e da incompatibilidade das implementações consolidadas de GraphRAG com um acervo que cresce continuamente, <strong>qual estratégia de recuperação</strong> (RAG denso, RAG denso-esparso ou GraphRAG incremental) e <strong>qual estratégia de geração</strong> (single-pass ou verificada multiagente) produz respostas mais precisas, fundamentadas e rastreáveis sobre um corpus jurídico-administrativo brasileiro?"
+          </p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-top: 10px; font-size: 0.85rem;">
+            <div style="background: rgba(255, 255, 255, 0.03); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.06);">
+              <span style="color: #34d399; font-weight: 700; font-size: 0.9rem;">Dimensão 1 • Hipótese H1 (Retrieval):</span><br/>
+              <span style="color: #94a3b8;">Compara GraphRAG Incremental vs. RAG Híbrido RRF vs. RAG Denso na capacidade de resgatar normas e jurisprudência correlatas.</span>
+            </div>
+            <div style="background: rgba(255, 255, 255, 0.03); padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.06);">
+              <span style="color: #fbbf24; font-weight: 700; font-size: 0.9rem;">Dimensão 2 • Hipótese H2 (Geração):</span><br/>
+              <span style="color: #94a3b8;">Compara geração direta (Single-Pass) vs. orquestração encadeada Multiagente (Researcher-Auditor-Adjudicator) em fidelidade factual e custo.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="insight-card">
+        <div class="insight-title">🎯 O Corpus Jurídico Real sob Teste</div>
+        <div class="insight-body">
+          Documentos de atos normativos e decisões do Conselho Nacional de Justiça (CNJ), Tribunal de Contas da União (TCU) e Leis Federais (total de <strong>300 documentos</strong> e ~9.452 chunks). As perguntas foram divididas metodologicamente em <strong>Fase 1 (Intra-documento, n=234)</strong>, focada em precisão de regras isoladas, e <strong>Fase 2 (Cross-document, n=216)</strong>, exigindo cruzamento entre atos regulamentares e jurisprudência correlata.
+        </div>
+      </div>
+    </section>
+
+    <!-- H1 - EMBATE DE RETRIEVAL -->
+    <section id="ato2" class="narrative-section">
+      <div class="section-header">
+        <span class="act-tag">2. Tensão • Quebra de Expectativa no Retrieval (H1)</span>
+        <h2 class="section-title">O Embate do Retrieval: Desmistificando o GraphRAG Puro e o Reranking</h2>
+        <p class="section-summary">
+          A hipótese H1 previa que o GraphRAG superaria a busca densa e o RAG híbrido. O teste com 450 perguntas pareadas revelou uma realidade contraintuitiva: o GraphRAG puro colapsa em cobertura, e o reranker tradicional degrada a precisão de termos jurídicos literais.
+        </p>
+      </div>
+
+      <!-- GRÁFICO 1 COM TÍTULO-CONCLUSÃO -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-conclusion-title">
+            <span class="status-dot" style="background: var(--color-winner);"></span>
+            RAG Híbrido domina a fronteira de eficiência; GraphRAG puro colapsa em cobertura
+          </div>
+          <p class="chart-subtitle-narrative">
+            Diagrama de trade-off entre <strong>Context Recall</strong> (capacidade de resgatar todas as evidências necessárias) e <strong>Context Precision</strong> (capacidade de priorizar apenas chunks relevantes no topo). O canto superior direito representa a fronteira ótima.
+          </p>
+        </div>
+
+        <div id="chartRetrievalScatter" class="chart-box"></div>
+
+        <div class="chart-footer-note">
+          <span>Fonte: Relatórios 08 e 10 (Mestrado IDP) • n = 450 perguntas pareadas</span>
+          <span>Métricas calculadas via RAGAS sobre Golden Dataset curado</span>
+        </div>
+      </div>
+
+      <!-- TABELA COMPARATIVA H1 -->
+      <div class="data-table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Condição de Retrieval</th>
+              <th>Faithfulness (Fidelidade)</th>
+              <th>Context Precision</th>
+              <th>Context Recall</th>
+              <th>Answer Relevancy</th>
+              <th>Status no Estudo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="winner-row">
+              <td><strong>condicao_6 (RAG Híbrido sem Reranking)</strong></td>
+              <td><strong>0,9064 ⭐</strong></td>
+              <td>0,5872</td>
+              <td>0,8951</td>
+              <td><strong>0,6919 ⭐</strong></td>
+              <td><span class="tag-pill tag-winner">Vencedor Geral H1</span></td>
+            </tr>
+            <tr>
+              <td>condicao_5 (GraphRAG Incremental Denso+Grafo)</td>
+              <td>0,8987</td>
+              <td>0,3234</td>
+              <td><strong>0,9117 ⭐</strong></td>
+              <td>0,6872</td>
+              <td><span class="tag-pill tag-warning">Custo Alto / Empate estatístico com c2 (Híbrido)</span></td>
+            </tr>
+            <tr>
+              <td>condicao_2 (RAG Híbrido RRF + Rerank)</td>
+              <td>0,8943</td>
+              <td>0,3229</td>
+              <td>0,8961</td>
+              <td>0,6902</td>
+              <td><span class="tag-pill tag-neutral">Base Confirmatória</span></td>
+            </tr>
+            <tr>
+              <td>candidata_14 (Híbrido s/ Rerank + Jev-topk, n=450)</td>
+              <td>0,8899</td>
+              <td><strong>0,6473 ⭐</strong></td>
+              <td>0,8032</td>
+              <td>0,6393</td>
+              <td><span class="tag-pill tag-neutral">Líder Precisão / Perde Recall</span></td>
+            </tr>
+            <tr>
+              <td>condicao_8 (BM25 Lexical Puro)</td>
+              <td>0,8529</td>
+              <td>0,6217</td>
+              <td>0,8163</td>
+              <td>0,6259</td>
+              <td><span class="tag-pill tag-neutral">Especialista em Precisão</span></td>
+            </tr>
+            <tr>
+              <td>condicao_7 (BM25 Lexical + Rerank)</td>
+              <td>0,8601</td>
+              <td>0,4063</td>
+              <td>0,8132</td>
+              <td>0,6273</td>
+              <td><span class="tag-pill tag-warning">Queda pelo Reranker</span></td>
+            </tr>
+            <tr>
+              <td>candidata_13* (Híbrido + Jev-rerank+topk, n=50)</td>
+              <td>0,8639</td>
+              <td>0,6305</td>
+              <td>0,6720</td>
+              <td>0,5723</td>
+              <td><span class="tag-pill tag-neutral">Exploratória Jev</span></td>
+            </tr>
+            <tr>
+              <td>candidata_12* (BM25 + Jev-rerank+topk, n=50)</td>
+              <td>0,8958</td>
+              <td>0,6032</td>
+              <td>0,6243</td>
+              <td>0,5423</td>
+              <td><span class="tag-pill tag-neutral">Exploratória Jev</span></td>
+            </tr>
+            <tr>
+              <td>candidata_10* (BM25 + Jev-rerank, n=50)</td>
+              <td>0,8955</td>
+              <td>0,5786</td>
+              <td>0,6543</td>
+              <td>0,5668</td>
+              <td><span class="tag-pill tag-neutral">Exploratória Jev</span></td>
+            </tr>
+            <tr>
+              <td>candidata_11* (BM25 + Jev-topk, n=50)</td>
+              <td>0,8401</td>
+              <td>0,5342</td>
+              <td>0,7110</td>
+              <td>0,5633</td>
+              <td><span class="tag-pill tag-neutral">Exploratória Jev</span></td>
+            </tr>
+            <tr>
+              <td>condicao_1 (RAG Denso)</td>
+              <td>0,8329</td>
+              <td>0,5542</td>
+              <td>0,6933</td>
+              <td>0,5497</td>
+              <td><span class="tag-pill tag-neutral">Baseline Vetorial</span></td>
+            </tr>
+            <tr>
+              <td>candidata_9* (Denso + Rerank, n=50)</td>
+              <td>0,8184</td>
+              <td>0,5215</td>
+              <td>0,7040</td>
+              <td>0,4492</td>
+              <td><span class="tag-pill tag-neutral">Exploratória Denso</span></td>
+            </tr>
+            <tr>
+              <td>condicao_3 (GraphRAG Puro)</td>
+              <td>0,7253</td>
+              <td>0,1809</td>
+              <td>0,1400</td>
+              <td>0,1910</td>
+              <td><span class="tag-pill tag-danger">Colapso de Recall</span></td>
+            </tr>
+            <tr>
+              <td>condicao_4 (GraphRAG Puro c/ Seed Híbrida)</td>
+              <td>0,7171</td>
+              <td>0,1732</td>
+              <td>0,1434</td>
+              <td>0,1988</td>
+              <td><span class="tag-pill tag-danger">Refutado</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="padding: 10px 18px; font-size: 0.8rem; color: var(--text-dim); border-top: 1px solid var(--border-color); background: rgba(0,0,0,0.2);">
+          <span>* Amostra exploratória restrita a n=50 (Fase 2 cross-document). A candidata_14 foi executada na amostra confirmatória completa de n=450 perguntas.</span>
+        </div>
+      </div>
+
+      <!-- CARD: POR QUE C6 VENCEU (RECALL É ELIMINATÓRIO) -->
+      <div class="insight-card winner" style="margin-top: 24px;">
+        <div class="insight-title" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+          <span>🏆 Por que a condicao_6 (RAG Híbrido sem Reranking) Venceu? (E por que precisão isolada não bastou)</span>
+          <span class="tag-pill tag-winner" style="font-size: 0.7rem;">Critério Eliminatório: Context Recall</span>
+        </div>
+        <div class="insight-body" style="margin-top: 10px;">
+          <p style="margin-bottom: 10px;">
+            Um espectador atento pode questionar: <em>"Se a <strong>candidata_14 (Híbrido s/ Rerank + Jev top-k)</strong> (0,6473) e a <strong>condicao_8 (BM25 Lexical Puro)</strong> (0,6217) atingiram Context Precision maior, por que não foram as vencedoras?"</em> A resposta reside no rigor do domínio jurídico e na assimetria do erro:
+          </p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 12px;">
+            <div style="background: rgba(0, 0, 0, 0.25); padding: 14px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05);">
+              <span style="color: #34d399; font-weight: 700; font-size: 0.85rem;">1. O Recall é Eliminatório (Assimetria do Falso Negativo)</span>
+              <p style="font-size: 0.825rem; color: #94a3b8; margin-top: 6px; line-height: 1.45;">
+                Em auditoria e direito, se um artigo ou acórdão <strong>deixa de ser recuperado</strong> (falso negativo), o LLM é forçado a alucinar por omissão ou emitir parecer nulo — erro fatal e irrecuperável. Se o trecho estiver no contexto (mesmo com precisão moderada), o LLM filtra o ruído e responde com perfeição.
+              </p>
+            </div>
+            <div style="background: rgba(0, 0, 0, 0.25); padding: 14px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05);">
+              <span style="color: #f87171; font-weight: 700; font-size: 0.85rem;">2. O Preço Oculto da Alta Precisão de c14 (Jev Top-K) e c8 (BM25 Puro)</span>
+              <p style="font-size: 0.825rem; color: #94a3b8; margin-top: 6px; line-height: 1.45;">
+                A <code>candidata_14 (Híbrido s/ Rerank + Jev top-k)</code> e a <code>condicao_8 (BM25 Lexical Puro)</code> ganham precisão cortando chunks agressivamente, mas pagam um preço inaceitável: o recall despenca de <strong>0,8951 (c6)</strong> para <strong>0,8032 (c14)</strong> e <strong>0,8163 (c8)</strong> — perda estatisticamente significativa de quase 10 pontos percentuais (<em>p &lt; 10⁻¹¹</em>). Perde-se 1 em cada 5 normas essenciais.
+              </p>
+            </div>
+            <div style="background: rgba(0, 0, 0, 0.25); padding: 14px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05);">
+              <span style="color: #38bdf8; font-weight: 700; font-size: 0.85rem;">3. Campeã Absoluta em Fidelidade e Relevância Finais</span>
+              <p style="font-size: 0.825rem; color: #94a3b8; margin-top: 6px; line-height: 1.45;">
+                A <code>condicao_6 (RAG Híbrido sem Reranking)</code> empatou no topo de Recall (0,8951 em c6 vs 0,8961 em c2 e 0,9117 em c5), saltou de <strong>0,3229 (c2 Híbrido c/ Rerank)</strong> para <strong>0,5872 em c6 (+81,8%)</strong> em Precisão e liderou o estudo nas métricas fim-a-fim da resposta: <strong>0,9064 em Fidelidade (Faithfulness)</strong> e <strong>0,6919 em Relevância (Answer Relevancy)</strong>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="insight-card" style="margin-top: 16px; border-left-color: #06b6d4;">
+        <div class="insight-title">💡 O Mecanismo Revelado: Por que o Reranker Piorou a Precisão?</div>
+        <div class="insight-body">
+          Em perguntas jurídicas, os usuários citam números específicos de artigos, incisos e leis. O modelo de reranking cross-encoder (treinado em domínio geral como MS-MARCO) penaliza passagens que não aparentam "fluência conversacional", rebaixando trechos literais cruciais. Ao retirar o reranker em <code>condicao_6 (RAG Híbrido sem Reranking)</code>, a precisão saltou de <strong>0,3229 (c2 Híbrido c/ Rerank)</strong> para <strong>0,5872 em c6 (+81,8%)</strong> sem perder recall, reduzindo o custo de inferência a zero nesta etapa.
+        </div>
+      </div>
+    </section>
+
+    <!-- H2 - EMBATE DE GERAÇÃO -->
+    <section id="ato3" class="narrative-section">
+      <div class="section-header">
+        <span class="act-tag">3. Tensão • O Custo Oculto da Geração Multiagente (H2)</span>
+        <h2 class="section-title">O Embate da Geração: Multiagente vs. Single-Pass</h2>
+        <p class="section-summary">
+          Testamos uma orquestração multiagente completa (Pesquisador → Auditor Crítico → Adjudicador) contra uma geração direta com agente único (Single-Pass). O resultado desafia o hype: a sobrecarga de coordenação entre agentes não produziu ganhos estatísticos em confiabilidade.
+        </p>
+      </div>
+
+      <!-- EXPLICATIVO DE PAPÉIS: AGENTE ÚNICO VS MULTIAGENTE -->
+      <div class="insight-card" style="margin-bottom: 24px; border-left-color: #8b5cf6;">
+        <div class="insight-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <span>🎭 Papel dos Agentes na Geração: Single-Pass vs. Cadeia Multiagente</span>
+          <span class="tag-pill tag-neutral" style="font-size: 0.7rem; font-weight: 600;">Setup Experimental Pareado (n = 450)</span>
+        </div>
+        <div class="insight-body">
+          <p style="margin-bottom: 16px; color: var(--text-secondary); font-size: 0.9rem;">
+            Ambas as abordagens foram alimentadas com os mesmos chunks recuperados pela condição campeã de H1 (<code>condicao_6 RAG Híbrido sem Reranking</code>). A comparação isolou exatamente o impacto da arquitetura de geração:
+          </p>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;">
+            <!-- CARD 1: AGENTE ÚNICO (SINGLE-PASS) -->
+            <div style="background: rgba(15, 23, 42, 0.6); padding: 18px; border-radius: 10px; border: 1px solid rgba(56, 189, 248, 0.25); display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                  <span style="font-weight: 800; color: #38bdf8; font-size: 1rem; display: flex; align-items: center; gap: 8px;">
+                    ⚡ Agente Único (Single-Pass)
+                  </span>
+                  <span class="tag-pill tag-success" style="font-size: 0.68rem; font-weight: 700;">1 Chamada LLM Direta</span>
+                </div>
+                <div style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 12px;">
+                  <strong style="color: #f8fafc;">Como atua:</strong> Recebe a pergunta do usuário e os trechos de contexto recuperados (chunks). Em uma única inferência, sintetiza a fundamentação técnica e apõe as citações normativas <code>[N]</code> correspondentes. Se os chunks não contiverem subsídios, declara expressamente que não possui a informação, prevenindo alucinações.
+                </div>
+              </div>
+              <div style="font-size: 0.76rem; color: #94a3b8; background: rgba(0, 0, 0, 0.3); padding: 10px 12px; border-radius: 6px; border-left: 3px solid #38bdf8; line-height: 1.4;">
+                <strong style="color: #38bdf8;">Perfil Operacional:</strong> Rápido (76,6s), menor consumo de tokens (1,0x) e sem ruído de passagem entre modelos.
+              </div>
+            </div>
+
+            <!-- CARD 2: CADEIA MULTIAGENTE -->
+            <div style="background: rgba(15, 23, 42, 0.6); padding: 18px; border-radius: 10px; border: 1px solid rgba(168, 85, 247, 0.25); display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                  <span style="font-weight: 800; color: #c084fc; font-size: 1rem; display: flex; align-items: center; gap: 8px;">
+                    🤝 Pipeline Multiagente Especializado
+                  </span>
+                  <span class="tag-pill tag-warning" style="font-size: 0.68rem; font-weight: 700;">3 Chamadas LLM em Série</span>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px;">
+                  <div style="font-size: 0.83rem; color: #cbd5e1; line-height: 1.4; background: rgba(255,255,255,0.03); padding: 10px 12px; border-radius: 6px; border-left: 3px solid #a855f7;">
+                    <div style="font-weight: 700; color: #e9d5ff; margin-bottom: 2px;">1. Pesquisador (Researcher):</div>
+                    Recebe a pergunta e os chunks do RAG. Elabora a minuta preliminar estruturada de resposta, organizando os argumentos e indicando as fontes iniciais <code>[N]</code>.
+                  </div>
+                  <div style="font-size: 0.83rem; color: #cbd5e1; line-height: 1.4; background: rgba(255,255,255,0.03); padding: 10px 12px; border-radius: 6px; border-left: 3px solid #f59e0b;">
+                    <div style="font-weight: 700; color: #fde68a; margin-bottom: 2px;">2. Auditor Crítico (Auditor):</div>
+                    Atua em postura adversária estrita. Confronta linha por linha da minuta contra os chunks originais, apontando alucinações, extrapolações não respaldadas ou fontes inválidas.
+                  </div>
+                  <div style="font-size: 0.83rem; color: #cbd5e1; line-height: 1.4; background: rgba(255,255,255,0.03); padding: 10px 12px; border-radius: 6px; border-left: 3px solid #10b981;">
+                    <div style="font-weight: 700; color: #a7f3d0; margin-bottom: 2px;">3. Adjudicador (Adjudicator):</div>
+                    Recebe a minuta e o relatório de auditoria. Expurga pontos contestados, sana divergências e sintetiza o texto deliberativo final entregue ao usuário.
+                  </div>
+                </div>
+              </div>
+              <div style="font-size: 0.76rem; color: #94a3b8; background: rgba(0, 0, 0, 0.3); padding: 10px 12px; border-radius: 6px; border-left: 3px solid #f59e0b; line-height: 1.4;">
+                <strong style="color: #fbbf24;">Perfil Operacional:</strong> Elevada latência (124,5s / +62,6%), 1.350 chamadas de LLM por lote e ~2,8x consumo de tokens.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GRÁFICO 2 COM TÍTULO-CONCLUSÃO -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-conclusion-title">
+            <span class="status-dot" style="background: var(--color-warning);"></span>
+            Multiagente adiciona 63% de latência e custa 2,8x mais sem ganho estatisticamente mensurável de fidelidade
+          </div>
+          <p class="chart-subtitle-narrative">
+            Comparação pareada direta sobre a mesma condição de recuperação (n = 450 perguntas). A qualidade factual (Faithfulness) é indistinguível, mas a latência operacional e o custo em tokens explodem na arquitetura multiagente.
+          </p>
+        </div>
+
+        <!-- Dois Subplots Pareados: Qualidade (0 a 1) vs Custo/Latência (s) -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 24px; margin-bottom: 8px;">
+          <div style="background: rgba(15, 23, 42, 0.5); padding: 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05);">
+            <div style="font-size: 0.95rem; font-weight: 700; color: #38bdf8; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+              <span>Métricas de Confiabilidade (0.0 a 1.0)</span>
+              <span class="tag-pill tag-neutral" style="font-size: 0.65rem;">Empate Estatístico (p ≥ 0,34)</span>
+            </div>
+            <div id="chartH2Quality" style="width: 100%; height: 380px;"></div>
+          </div>
+          <div style="background: rgba(15, 23, 42, 0.5); padding: 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05);">
+            <div style="font-size: 0.95rem; font-weight: 700; color: #f59e0b; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+              <span>Custo Computacional: Latência Média (s)</span>
+              <span class="tag-pill tag-danger" style="font-size: 0.65rem;">+62,6% de Tempo (p &lt; 0,0001)</span>
+            </div>
+            <div id="chartH2Latency" style="width: 100%; height: 380px;"></div>
+          </div>
+        </div>
+
+        <div class="chart-footer-note">
+          <span>Teste de Wilcoxon signed-rank pareado • p-valor de Fidelidade = 0,3425 (Não significativo)</span>
+          <span>p-valor de Latência &lt; 0,0001 (Altamente significativo)</span>
+        </div>
+      </div>
+
+      <!-- RESUMO COMPARATIVO DE CUSTO/BENEFÍCIO H2 -->
+      <div class="kpi-grid">
+        <div class="kpi-card" style="--card-accent: #10b981;">
+          <div class="kpi-label">Fidelidade Factual (Faithfulness)</div>
+          <div class="kpi-value" style="font-size: 1.6rem;">0,894 vs 0,910</div>
+          <div class="kpi-desc">
+            Diferença de apenas 0,016 (<strong>p = 0,3425</strong>). Empate estatístico*.
+            <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">*p ≥ 0,05.</div>
+          </div>
+        </div>
+
+        <div class="kpi-card" style="--card-accent: #38bdf8;">
+          <div class="kpi-label">Taxa de Verificação de Citações</div>
+          <div class="kpi-value" style="font-size: 1.6rem;">82,1% vs 82,7%</div>
+          <div class="kpi-desc">Citações [N] válidas idênticas (<strong>p = 0,6504</strong>). Empate estatístico.</div>
+        </div>
+
+        <div class="kpi-card" style="--card-accent: #f59e0b;">
+          <div class="kpi-label">Tempo Médio de Resposta</div>
+          <div class="kpi-value" style="font-size: 1.6rem; color:#fbbf24;">76,6s vs 124,5s</div>
+          <div class="kpi-desc"><strong>+47,9 segundos por consulta</strong> (+62,6% de latência).</div>
+        </div>
+
+        <div class="kpi-card" style="--card-accent: #ef4444;">
+          <div class="kpi-label">Custo e Consumo de API</div>
+          <div class="kpi-value" style="font-size: 1.6rem; color:#f87171;">1,0x vs ~2,8x</div>
+          <div class="kpi-desc"><strong>3 chamadas em série</strong> (1.350 chamadas totais no lote de 450).</div>
+        </div>
+      </div>
+
+      <!-- BREAKDOWN DE CUSTO COMPUTACIONAL E TOKENS -->
+      <div class="insight-card danger" style="margin-top: 20px;">
+        <div class="insight-title">💰 O Custo Invisível da Orquestração Multiagente</div>
+        <div class="insight-body">
+          <p style="margin-bottom: 12px;">
+            A orquestração multiagente encadeia 3 agentes em série: <em>Pesquisador / Researcher</em> (redige a minuta inicial), <em>Auditor Crítico / Auditor</em> (audita fidelidade e citações) e <em>Adjudicador / Adjudicator</em> (síntese e deliberação final). Isso gera uma sobrecarga computacional e financeira triplicada:
+          </p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 10px;">
+            <div style="background: rgba(0,0,0,0.3); padding: 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+              <span style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; font-weight: 600;">Chamadas de LLM por Pergunta</span>
+              <div style="font-size: 1.25rem; font-weight: 800; color: #f87171; margin: 4px 0;">1 chamada vs 3 chamadas (+200%)</div>
+              <span style="font-size: 0.8rem; color: #64748b;">450 vs 1.350 chamadas completas de modelo na rodada</span>
+            </div>
+            <div style="background: rgba(0,0,0,0.3); padding: 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+              <span style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; font-weight: 600;">Tráfego de Tokens (Contexto)</span>
+              <div style="font-size: 1.25rem; font-weight: 800; color: #fbbf24; margin: 4px 0;">~2,8x Tokens Processados</div>
+              <span style="font-size: 0.8rem; color: #64748b;">O bloco de chunks de contexto é reenviado ao Researcher e ao Auditor</span>
+            </div>
+            <div style="background: rgba(0,0,0,0.3); padding: 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+              <span style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; font-weight: 600;">Custo Financeiro Estimado</span>
+              <div style="font-size: 1.25rem; font-weight: 800; color: #ef4444; margin: 4px 0;">+180% a +200% em USD/BRL</div>
+              <span style="font-size: 0.8rem; color: #64748b;">Triplo do gasto por consulta sem ganho estatístico de fidelidade (p=0,34)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- O VEREDITO E A MATRIZ DE DECISÃO -->
+    <section id="veredito" class="narrative-section">
+      <div class="section-header">
+        <span class="act-tag">4. Resolução • Escolha entre Alternativas & Navalha de Ockham</span>
+        <h2 class="section-title">A Matriz de Decisão: Quando o Empate Técnico Eleva a Simplicidade</h2>
+        <p class="section-summary">
+          Na ausência de superioridade estatística e diante de custos astronômicos, o rigor científico exige aplicar a <strong>Navalha de Ockham</strong>: entre duas abordagens com resultados de qualidade equivalentes, a arquitetura mais simples e eficiente deve ir para produção.
+        </p>
+      </div>
+
+      <!-- GRÁFICO 3 COM TÍTULO-CONCLUSÃO -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-conclusion-title">
+            <span class="status-dot" style="background: var(--color-winner);"></span>
+            Evidência empírica não sustenta o custo extra: Navalha de Ockham como critério de produção
+          </div>
+          <p class="chart-subtitle-narrative">
+            Matriz de significância estatística pareada (Wilcoxon Signed-Rank + Bonferroni). Células verdes indicam diferença real comprovada (p &lt; 0,05). Células em azul indicam empate estatístico (ausência de evidência contra o mais simples).
+          </p>
+        </div>
+
+        <!-- GUIA DE LEITURA DA MATRIZ -->
+        <div style="background: rgba(15, 23, 42, 0.6); padding: 16px 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 20px;">
+          <div style="font-weight: 700; color: #38bdf8; font-size: 0.95rem; margin-bottom: 8px;">
+            🧭 Como interpretar este confronto pareado (Wilcoxon + Bonferroni):
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; font-size: 0.85rem; color: #cbd5e1;">
+            <div style="display: flex; align-items: flex-start; gap: 10px; background: rgba(2, 132, 199, 0.12); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(2, 132, 199, 0.3);">
+              <span style="display: inline-block; width: 14px; height: 14px; background: #0284c7; border-radius: 3px; margin-top: 3px; flex-shrink: 0;"></span>
+              <div>
+                <strong style="color: #38bdf8;">Célula Azul (Empate Técnico, p ≥ 0,05):</strong><br/>
+                Ausência de diferença estatística real. As duas arquiteturas entregam a <strong>mesma qualidade</strong>. A variação é puro ruído amostral.
+              </div>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 10px; background: rgba(16, 185, 129, 0.12); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3);">
+              <span style="display: inline-block; width: 14px; height: 14px; background: #10b981; border-radius: 3px; margin-top: 3px; flex-shrink: 0;"></span>
+              <div>
+                <strong style="color: #34d399;">Célula Verde (Vitória Comprovada, p &lt; 0,05):</strong><br/>
+                Diferença estatisticamente significativa. A arquitetura da linha supera a da coluna de forma reprodutível e com rigor científico.
+              </div>
+            </div>
+          </div>
+          <p style="margin-top: 10px; font-size: 0.825rem; color: #94a3b8; line-height: 1.4;">
+            🔎 <strong>O Ponto-Chave:</strong> Observe o bloco inferior esquerdo (cruzamento entre <em>c6</em>, <em>c5</em> e <em>c2</em>) — é totalmente <strong>Azul</strong>. Isso prova que o GraphRAG incremental caro (<em>c5</em>) <strong>não superou</strong> o RAG Híbrido (<em>c6</em>). Por isso, a <strong>Navalha de Ockham</strong> elege a arquitetura mais simples (<em>c6</em>) para produção.
+          </p>
+          <p style="margin-top: 8px; font-size: 0.8rem; color: #94a3b8; line-height: 1.4; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 8px;">
+            📌 <em>Escopo Metodológico:</em> A matriz foca nos 6 arquétipos principais com n=450 para viabilizar o controle estrito de comparações múltiplas (Bonferroni) e porque o teste pareado de Wilcoxon Signed-Rank exige que todas as condições da matriz tenham sido submetidas rigorosamente ao mesmo conjunto pareado de perguntas.
+          </p>
+        </div>
+
+        <div id="chartSignificanceMatrix" class="chart-box" style="height: 420px;"></div>
+
+        <div class="chart-footer-note">
+          <span>Critério: p &lt; 0,05 com correção de Bonferroni para comparações múltiplas</span>
+          <span>Regra de desempate documentada na Issue #62 do projeto</span>
+        </div>
+      </div>
+
+      <!-- CARD DA ARQUITETURA VENCEDORA DE PRODUÇÃO -->
+      <div class="central-question-card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(15, 23, 42, 0.9)); border-color: rgba(16, 185, 129, 0.3);">
+        <span class="question-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">Recomendação Prática de Engenharia</span>
+        <h3 style="font-size: 1.5rem; margin-bottom: 8px; color: #ffffff;">
+          Pipeline Vencedor de Produção: <span style="color: #34d399;">condicao_6 (RAG Híbrido sem Reranking)</span> + <span style="color: #38bdf8;">single_pass (Geração Direta)</span>
+        </h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 16px;">
+          Esta combinação atinge <strong>0,9064 de Faithfulness</strong>, <strong>0,8951 de Context Recall</strong> e reduz a latência operacional em <strong>60%</strong> em comparação com pipelines pesados de GraphRAG e orquestrações multiagente.
+        </p>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <span class="tag-pill tag-winner">Custo de API: 1x (Base)</span>
+          <span class="tag-pill tag-neutral">Infraestrutura: PostgreSQL + pgvector (Sem Grafo no caminho crítico)</span>
+          <span class="tag-pill tag-winner">Auditabilidade: Totalmente Rastreável</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- GLOSSÁRIO INTERATIVO -->
+    <section id="glossario" class="narrative-section">
+      <div class="section-header">
+        <span class="act-tag">Dicionário de Conceitos</span>
+        <h2 class="section-title">Glossário Metodológico e Métricas RAGAS</h2>
+        <p class="section-summary">
+          Compreenda com precisão cada conceito de avaliação e tecnologia abordado no estudo.
+        </p>
+      </div>
+
+      <input type="text" id="glossarySearch" class="search-box" placeholder="🔍 Digite para filtrar termos (ex: recall, reranking, wilcoxon, graphrag)...">
+
+      <div class="glossary-grid" id="glossaryContainer">
+        <div class="glossary-card" data-term="faithfulness fidelidade alucinacao confianca">
+          <div class="glossary-term">🛡️ Faithfulness (Fidelidade)</div>
+          <div class="glossary-def">
+            Mede a ausência de alucinação. Avalia se todas as afirmações contidas na resposta gerada pelo LLM são estritamente sustentadas pelas evidências do contexto recuperado. Varia de 0 a 1.
+          </div>
+        </div>
+
+        <div class="glossary-card" data-term="context precision precisao ranking">
+          <div class="glossary-term">🎯 Context Precision</div>
+          <div class="glossary-def">
+            Avalia se os trechos de texto verdadeiramente relevantes foram posicionados nos primeiros lugares do ranking de recuperação, evitando ruído antes do LLM. Varia de 0 a 1.
+          </div>
+        </div>
+
+        <div class="glossary-card" data-term="context recall cobertura">
+          <div class="glossary-term">📘 Context Recall</div>
+          <div class="glossary-def">
+            Mede se todas as informações e evidências necessárias para responder à pergunta foram efetivamente recuperadas dos documentos-fonte. Varia de 0 a 1.
+          </div>
+        </div>
+
+        <div class="glossary-card" data-term="answer relevancy pertinencia">
+          <div class="glossary-term">💬 Answer Relevancy</div>
+          <div class="glossary-def">
+            Avalia o quanto a resposta gerada é direta e pertinente à pergunta feita pelo usuário, penalizando respostas prolixas, evasivas ou incompletas. Varia de 0 a 1.
+          </div>
+        </div>
+
+        <div class="glossary-card" data-term="taxa de verificacao de citacoes citacoes validas citation verification rate rastreabilidade">
+          <div class="glossary-term">📑 Taxa de Verificação de Citações</div>
+          <div class="glossary-def">
+            Métrica de rastreabilidade normativa (Citation Verification Rate). Avalia, via passada independente de LLM-as-judge externa ao sistema, a proporção exata de citações [N] anexadas à resposta cuja alegação factual é comprovadamente sustentada pelo respectivo trecho documental recuperado.
+          </div>
+        </div>
+
+        <div class="glossary-card" data-term="rrf reciprocal rank fusion hibrido">
+          <div class="glossary-term">⚡ RRF (Reciprocal Rank Fusion)</div>
+          <div class="glossary-def">
+            Algoritmo de fusão por postos que combina o ranking da busca densa (vetorial) com o da busca esparsa (BM25 lexical), garantindo robustez a termos exatos e semântica.
+          </div>
+        </div>
+
+        <div class="glossary-card" data-term="graphrag grafo entidades relacoes">
+          <div class="glossary-term">🕸️ GraphRAG</div>
+          <div class="glossary-def">
+            Técnica que extrai entidades e relações para um grafo de propriedades (Apache AGE). Permite travessias conceituais, mas pode perder o texto literal dos artigos.
+          </div>
+        </div>
+
+        <div class="glossary-card" data-term="multiagente researcher auditor adjudicator">
+          <div class="glossary-term">🤖 Multiagente</div>
+          <div class="glossary-def">
+            Fluxo encadeado onde um agente Pesquisador elabora um rascunho, um Auditor aponta falhas ou contradições, e um Adjudicador sintetiza a decisão final.
+          </div>
+        </div>
+
+        <div class="glossary-card" data-term="wilcoxon pareado estatistica">
+          <div class="glossary-term">📐 Wilcoxon Signed-Rank Pareado</div>
+          <div class="glossary-def">
+            Teste estatístico não-paramétrico para amostras pareadas (mesma pergunta submetida às duas condições). Não assume distribuição normal dos dados.
+          </div>
+        </div>
+
+        <div class="glossary-card" data-term="bonferroni erro tipo 1">
+          <div class="glossary-term">⚖️ Correção de Bonferroni</div>
+          <div class="glossary-def">
+            Ajuste matemático rigoroso para testes de hipóteses múltiplos, controlando a probabilidade de falsos positivos (erro Tipo I) ao comparar 28 pares de condições.
+          </div>
+        </div>
+
+        <div class="glossary-card" data-term="navalha ockham simplicidade">
+          <div class="glossary-term">🪒 Navalha de Ockham</div>
+          <div class="glossary-def">
+            Princípio heurístico que estabelece que, perante múltiplas explicações ou modelos de desempenho equivalente, a solução com menor complexidade deve ser escolhida.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ METODOLÓGICO -->
+    <section id="faq" class="narrative-section">
+      <div class="section-header">
+        <span class="act-tag">Perguntas Frequentes</span>
+        <h2 class="section-title">FAQ Metodológico e Justificativas Técnicas</h2>
+        <p class="section-summary">
+          Respostas objetivas para os principais questionamentos técnicos e teóricos.
+        </p>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-trigger">
+          <span>1. O que é o Teste de Wilcoxon Signed-Rank Pareado e por que ele foi escolhido?</span>
+          <span class="icon">+</span>
+        </button>
+        <div class="accordion-content">
+          <p style="margin-bottom: 8px;">
+            <strong>Por que Pareado?</strong> Porque <em>não</em> foram pegas 450 perguntas aleatórias num grupo e 450 diferentes no outro. Foi a <strong>mesma pergunta exata</strong> \(P_i\) submetida a ambas as condições, calculando a diferença direta pergunta a pergunta: \(\Delta_i = \text{Score}_A(P_i) - \text{Score}_B(P_i)\). Isso neutraliza a variância provocada pela dificuldade de cada pergunta.
+          </p>
+          <p>
+            <strong>Por que Wilcoxon (e não o Teste t de Student)?</strong> O Teste t exige que os dados sigam uma distribuição normal (curva de sino gaussiana). No entanto, métricas de avaliação de LLM (como <em>Faithfulness</em>) acumulam-se fortemente nos extremos (muitas notas 1,0 e notas 0,0). O teste de Wilcoxon signed-rank é <strong>não-paramétrico</strong>: ele ranqueia as diferenças ordenadas por magnitude, sendo o padrão-ouro metodológico em Processamento de Linguagem Natural.
+          </p>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-trigger">
+          <span>2. O que é a Correção de Bonferroni e por que a matriz foca em 6 condições?</span>
+          <span class="icon">+</span>
+        </button>
+        <div class="accordion-content">
+          <p style="margin-bottom: 8px;">
+            <strong>O Risco dos Falsos Positivos e a Escolha dos 6 Arquétipos:</strong> A matriz foca nos 6 arquétipos principais com n=450 para viabilizar o controle estrito de comparações múltiplas (Bonferroni) e porque o teste pareado de Wilcoxon Signed-Rank exige que todas as condições da matriz tenham sido submetidas rigorosamente ao mesmo conjunto pareado de perguntas. Ao comparar 6 condições principais entre si, realizamos \(\binom{6}{2} = 15\) comparações pareadas. Se adotássemos o limiar usual de erro \(\alpha = 0,05\) sem correção, a probabilidade cumulativa de declarar pelo menos uma vitória falsa por puro acaso estatístico seria de:
+            \[1 - (1 - 0,05)^{15} \approx 53,7\%\]
+            A <strong>Correção de Bonferroni</strong> blinda o estudo dividindo o limiar (\(0,05 / 15 \approx 0,0033\)). Toda célula verde (<em>Sig. ✓</em>) representa uma vitória cientificamente sólida e irrefutável.
+          </p>
+          <p>
+            <strong>Por que a Matriz é Simétrica?</strong> O teste bicaudal avalia se a distribuição de A difere de B (\(H_0: \Delta = 0\)). O teste de A vs B gera matematicamente o mesmo \(p\)-valor de B vs A. A matriz indica <em>se há separação estatística</em>; a direção de quem venceu é identificada observando a média das métricas na tabela e no gráfico de dispersão.
+          </p>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-trigger">
+          <span>3. Qual foi o critério para eleger o vencedor de H1: por que Context Recall é indispensável?</span>
+          <span class="icon">+</span>
+        </button>
+        <div class="accordion-content">
+          <p style="margin-bottom: 8px;">
+            <strong>O Papel Crítico do Recall em Direito e Auditoria:</strong> O <em>Context Recall</em> mede a completude fática. Se o artigo, inciso ou acórdão necessário <strong>não for resgatado</strong> da base, o modelo de linguagem é forçado a inventar uma regra (alucinação) ou a recusar a resposta. Ter a norma presente no contexto é o pré-requisito indispensável da segurança jurídica.
+          </p>
+          <p style="margin-bottom: 8px;">
+            <strong>Por que a condicao_6 venceu com folga?</strong> Ela atingiu o equilíbrio ótimo: empatou no topo de Recall com \(0,8951\) (estatisticamente idêntica ao GraphRAG e ao RAG híbrido com rerank), enquanto deu um salto de <strong>+81% em Context Precision</strong> (\(0,5872\) vs \(0,3229\)), além de liderar em Fidelidade (\(0,9064\)) e Relevância da Resposta (\(0,6919\)).
+          </p>
+          <p>
+            <strong>Por que a condicao_8 (BM25 Puro) não foi eleita, apesar da precisão de 0,6217?</strong> Porque o BM25 puro perdeu \(8\%\) de Context Recall (\(0,8163\) vs \(0,8951\), \(p = 9,46 \times 10^{-12}\)). Em um órgão público de controle, perder quase um quinto das normas aplicáveis por excesso de seletividade lexical é inaceitável.
+          </p>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-trigger">
+          <span>4. Onde entra Answer Relevancy e qual o seu papel na avaliação de H1?</span>
+          <span class="icon">+</span>
+        </button>
+        <div class="accordion-content">
+          A métrica <strong>Answer Relevancy</strong> avalia se a resposta final responde de forma direta, clara e não-prolixa à dúvida do usuário. Ela está presente na tabela comparativa de H1 (onde a <code>condicao_6</code> também é a líder absoluta com <strong>0,6919</strong>). No gráfico de dispersão 2D, optou-se por plotar o plano canônico de Recuperação de Informação (<em>Context Recall</em> no eixo X vs. <em>Context Precision</em> no eixo Y), mantendo a fidelidade e a relevância disponíveis nas tabelas e tooltips interativos.
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-trigger">
+          <span>5. O que são as Candidatas Exploratórias com Jev (candidatas 9 a 14)?</span>
+          <span class="icon">+</span>
+        </button>
+        <div class="accordion-content">
+          Testamos o classificador probabilístico de IA <strong>Jev</strong> (TypeSafe AI) para decisões finas de recuperação (seleção dinâmica de top-k e cascata de reranking). A <code>candidata_14 (Híbrido sem Reranking + Jev top-k)</code> atingiu o recorde absoluto de Context Precision da pesquisa (<strong>0,6473</strong>). Contudo, na rodada confirmatória completa de 450 perguntas, ela sofreu uma queda estatisticamente significativa em Context Recall (\(0,8032\) vs \(0,8951\)). Isso confirmou que nenhuma das 6 candidatas de Jev conseguiu superar a <code>condicao_6</code> sem cobrar um pedágio em cobertura, consolidando a <code>condicao_6</code> como a escolha definitiva para produção.
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-trigger">
+          <span>6. Por que o GraphRAG Puro colapsou no corpus jurídico?</span>
+          <span class="icon">+</span>
+        </button>
+        <div class="accordion-content">
+          Em sua implementação pura, o GraphRAG constrói pseudo-chunks baseados na descrição sintetizada de nós e arestas de entidades (ex: nós de 'Norma', 'Obrigação', 'Risco'). Essa abstração é excelente para perguntas de panorama global, mas perde a literalidade textual (o texto <em>verbatim</em> dos incisos e parágrafos de leis). Quando o avaliador busca o artigo exato de uma portaria, o grafo entrega apenas paráfrases relacionais, resultando no colapso do Context Recall para 0,1400.
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-trigger">
+          <span>7. Por que o modelo de Reranking reduziu a precisão do RAG Híbrido e do BM25?</span>
+          <span class="icon">+</span>
+        </button>
+        <div class="accordion-content">
+          O modelo de reranking utilizado (cross-encoder) foi treinado em grandes datasets conversacionais abertos. Na pesquisa jurídica, o usuário frequentemente busca jargões técnicos estritos e remissões a números de atos normativos. O reranker tendeu a premiar trechos com redação fluida e punir artigos de redação seca ou formal, empurrando chunks fundamentais para posições inferiores do ranking. Ao retirar o reranker em <code>condicao_6 (RAG Híbrido sem Reranking)</code>, a busca puramente fundida por RRF preservou os chunks corretos no topo.
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-trigger">
+          <span>8. Por que adotar a Navalha de Ockham como critério formal de engenharia pública?</span>
+          <span class="icon">+</span>
+        </button>
+        <div class="accordion-content">
+          Em órgãos de controle e administração pública, sistemas computacionais devem ser auditáveis, ter baixo custo de manutenção e alta previsibilidade. Manter pipelines com múltiplas chamadas consecutivas a LLMs (como na arquitetura multiagente) triplica os custos de tokens, introduz novos pontos de falha e eleva a latência para quase 2 minutos por consulta. Sem um ganho estatístico que comprove melhoria de entrega, optar pelo sistema mais complexo seria uma infração direta ao princípio da eficiência administrativa.
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <p style="margin-bottom: 8px;">
+        <strong>Avaliação Comparativa de Arquiteturas RAG para Respostas Jurídico-Administrativas Confiáveis</strong>
+      </p>
+      <p style="margin-bottom: 12px;">
+        Dissertação de Mestrado em Ciência de Dados e IA • IDP Brasília • 2026
+      </p>
+      <p style="font-size: 0.8rem; color: var(--text-dim);">
+        Pesquisador: Pedro Ivo Guimarães Póvoa | Orientador: Prof. Dr. Alex Lopes Pereira | Trabalho Final de Storytelling
+      </p>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS ECHARTS E INTERATIVIDADE -->
+  <script>
+    // -------------------------------------------------------------
+    // 1. INICIALIZAÇÃO DOS GRÁFICOS APACHE ECHARTS
+    // -------------------------------------------------------------
+    document.addEventListener('DOMContentLoaded', function() {
+      initRetrievalScatter();
+      initGenerationH2();
+      initSignificanceMatrix();
+      initAccordion();
+      initGlossaryFilter();
+      initTimer();
+      initNavScroll();
+    });
+
+    // Gráfico 1: Trade-off Scatter Context Precision vs Context Recall
+    function initRetrievalScatter() {
+      const chartDom = document.getElementById('chartRetrievalScatter');
+      const myChart = echarts.init(chartDom);
+
+      // Dados das 8 condições investigadas
+      // [Context Recall, Context Precision, Faithfulness, Nome Completo, Categoria, Cor]
+      const dataPoints = [
+        {
+          name: 'condicao_6 (RAG Híbrido sem Reranking) ⭐',
+          value: [0.8951, 0.5872, 0.9064],
+          symbolSize: 22,
+          itemStyle: { color: '#10b981', borderColor: '#ffffff', borderWidth: 2, shadowBlur: 10, shadowColor: 'rgba(16, 185, 129, 0.8)' },
+          label: { show: true, formatter: 'c6 (Híbrido s/ Rerank - Vencedor)', position: 'top', color: '#34d399', fontWeight: 'bold', fontSize: 12 }
+        },
+        {
+          name: 'condicao_5 (GraphRAG Incremental)',
+          value: [0.9117, 0.3234, 0.8987],
+          symbolSize: 16,
+          itemStyle: { color: '#a855f7' },
+          label: { show: true, formatter: 'c5 (GraphRAG Incr.)', position: 'right', color: '#c084fc', fontSize: 11 }
+        },
+        {
+          name: 'condicao_2 (RAG Híbrido c/ Rerank)',
+          value: [0.8961, 0.3229, 0.8943],
+          symbolSize: 16,
+          itemStyle: { color: '#06b6d4' },
+          label: { show: true, formatter: 'c2 (Híbrido c/ Rerank)', position: 'left', color: '#38bdf8', fontSize: 11 }
+        },
+        {
+          name: 'condicao_8 (BM25 Lexical Puro)',
+          value: [0.8163, 0.6217, 0.8529],
+          symbolSize: 15,
+          itemStyle: { color: '#3b82f6' },
+          label: { show: true, formatter: 'c8 (BM25 Puro)', position: 'top', color: '#60a5fa', fontSize: 11 }
+        },
+        {
+          name: 'condicao_7 (BM25 Lexical + Rerank)',
+          value: [0.8132, 0.4063, 0.8601],
+          symbolSize: 13,
+          itemStyle: { color: '#6366f1' },
+          label: { show: true, formatter: 'c7 (BM25 + Rerank)', position: 'bottom', color: '#818cf8', fontSize: 10 }
+        },
+        {
+          name: 'condicao_1 (RAG Denso)',
+          value: [0.6933, 0.5542, 0.8329],
+          symbolSize: 14,
+          itemStyle: { color: '#64748b' },
+          label: { show: true, formatter: 'c1 (Denso)', position: 'left', color: '#94a3b8', fontSize: 11 }
+        },
+        {
+          name: 'condicao_3 (GraphRAG Puro) ⚠️',
+          value: [0.1400, 0.1809, 0.7253],
+          symbolSize: 18,
+          itemStyle: { color: '#ef4444', borderColor: '#ffffff', borderWidth: 1.5 },
+          label: { show: true, formatter: 'c3 (GraphRAG Puro: Colapso)', position: 'right', color: '#f87171', fontWeight: 'bold', fontSize: 11 }
+        },
+        {
+          name: 'candidata_14 (Híbrido s/ Rerank + Jev-topk, n=450) ⭐',
+          value: [0.8032, 0.6473, 0.8899],
+          symbolSize: 16,
+          itemStyle: { color: '#eab308', borderColor: '#ffffff', borderWidth: 1.5 },
+          label: { show: true, formatter: 'c14 (Jev Top-K, n=450)', position: 'top', color: '#facc15', fontSize: 11 }
+        },
+        {
+          name: 'candidata_13* (Híbrido + Jev Rerank+TopK, n=50)',
+          value: [0.6720, 0.6305, 0.8639],
+          symbolSize: 12,
+          itemStyle: { color: '#d97706' },
+          label: { show: true, formatter: 'c13* (Jev)', position: 'left', color: '#fbbf24', fontSize: 10 }
+        },
+        {
+          name: 'candidata_12* (BM25 + Jev Rerank+TopK, n=50)',
+          value: [0.6243, 0.6032, 0.8958],
+          symbolSize: 12,
+          itemStyle: { color: '#ca8a04' },
+          label: { show: false }
+        },
+        {
+          name: 'candidata_10* (BM25 + Jev Rerank, n=50)',
+          value: [0.6543, 0.5786, 0.8955],
+          symbolSize: 12,
+          itemStyle: { color: '#b45309' },
+          label: { show: false }
+        },
+        {
+          name: 'candidata_11* (BM25 + Jev TopK, n=50)',
+          value: [0.7110, 0.5342, 0.8401],
+          symbolSize: 12,
+          itemStyle: { color: '#92400e' },
+          label: { show: false }
+        },
+        {
+          name: 'candidata_9* (Denso + Rerank, n=50)',
+          value: [0.7040, 0.5215, 0.8184],
+          symbolSize: 12,
+          itemStyle: { color: '#475569' },
+          label: { show: false }
+        },
+        {
+          name: 'condicao_4 (GraphRAG Puro c/ Seed Híbrida)',
+          value: [0.1434, 0.1732, 0.7171],
+          symbolSize: 13,
+          itemStyle: { color: '#b91c1c' },
+          label: { show: true, formatter: 'c4 (Seed Híbrida)', position: 'bottom', color: '#fca5a5', fontSize: 10 }
+        }
+      ];
+
+      const option = {
+        backgroundColor: 'transparent',
+        tooltip: {
+          trigger: 'item',
+          backgroundColor: 'rgba(15, 23, 42, 0.95)',
+          borderColor: 'rgba(255, 255, 255, 0.15)',
+          textStyle: { color: '#f8fafc', fontFamily: 'Plus Jakarta Sans' },
+          formatter: function(params) {
+            const d = params.data;
+            return `
+              <div style="font-weight:700; color:#38bdf8; margin-bottom:4px;">${d.name}</div>
+              <div>Context Recall: <strong>${d.value[0].toFixed(4)}</strong></div>
+              <div>Context Precision: <strong>${d.value[1].toFixed(4)}</strong></div>
+              <div>Fidelidade (Faithfulness): <strong>${d.value[2].toFixed(4)}</strong></div>
+            `;
+          }
+        },
+        grid: {
+          top: 50,
+          right: 40,
+          bottom: 50,
+          left: 60
+        },
+        xAxis: {
+          name: 'Context Recall (Cobertura de Evidências)',
+          nameLocation: 'middle',
+          nameGap: 30,
+          min: 0.0,
+          max: 1.0,
+          nameTextStyle: { color: '#94a3b8', fontSize: 12 },
+          axisLabel: { color: '#94a3b8' },
+          splitLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.05)' } }
+        },
+        yAxis: {
+          name: 'Context Precision (Relevância no Topo)',
+          nameLocation: 'middle',
+          nameGap: 40,
+          min: 0.0,
+          max: 0.75,
+          nameTextStyle: { color: '#94a3b8', fontSize: 12 },
+          axisLabel: { color: '#94a3b8' },
+          splitLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.05)' } }
+        },
+        // Linhas de Demarcação de Quadrantes
+        series: [
+          {
+            type: 'scatter',
+            data: dataPoints,
+            markLine: {
+              silent: true,
+              lineStyle: { type: 'dashed', color: 'rgba(255, 255, 255, 0.12)' },
+              data: [
+                { xAxis: 0.70, label: { formatter: 'Limiar de Recall', color: '#64748b' } },
+                { yAxis: 0.45, label: { formatter: 'Limiar de Precisão', color: '#64748b' } }
+              ]
+            },
+            markArea: {
+              silent: true,
+              data: [
+                [
+                  {
+                    name: 'Fronteira Ótima de Eficiência',
+                    xAxis: 0.70,
+                    yAxis: 0.45,
+                    itemStyle: { color: 'rgba(16, 185, 129, 0.04)' },
+                    label: { position: ['75%', '20%'], color: 'rgba(52, 211, 153, 0.4)', fontSize: 12, fontWeight: 'bold' }
+                  },
+                  { xAxis: 1.0, yAxis: 0.75 }
+                ],
+                [
+                  {
+                    name: 'Zona de Colapso de Cobertura',
+                    xAxis: 0.0,
+                    yAxis: 0.0,
+                    itemStyle: { color: 'rgba(239, 68, 68, 0.03)' },
+                    label: { position: ['10%', '80%'], color: 'rgba(248, 113, 113, 0.35)', fontSize: 11 }
+                  },
+                  { xAxis: 0.40, yAxis: 0.35 }
+                ]
+              ]
+            }
+          }
+        ]
+      };
+
+      myChart.setOption(option);
+      window.addEventListener('resize', () => myChart.resize());
+    }
+
+    // Gráfico 2: Comparação de Geração H2 (Barras agrupadas)
+    function initGenerationH2() {
+      // 1. Gráfico de Qualidade (Fidelidade e Citação)
+      const chartDomQuality = document.getElementById('chartH2Quality');
+      if (chartDomQuality) {
+        const myChartQuality = echarts.init(chartDomQuality);
+        const optionQuality = {
+          backgroundColor: 'transparent',
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'shadow' },
+            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+            borderColor: 'rgba(255, 255, 255, 0.15)',
+            textStyle: { color: '#f8fafc' },
+            formatter: function(params) {
+              return `<strong>${params[0].axisValue}</strong><br/>` +
+                params.map(p => `${p.marker} ${p.seriesName}: <strong>${(p.value * 100).toFixed(1)}%</strong> (${p.value.toFixed(4)})`).join('<br/>');
+            }
+          },
+          legend: {
+            data: ['single_pass (Agente Único Direto)', 'multiagente (Researcher-Auditor-Adjudicator)'],
+            top: 0,
+            textStyle: { color: '#cbd5e1', fontSize: 10 }
+          },
+          grid: {
+            top: 60,
+            left: 45,
+            right: 20,
+            bottom: 40
+          },
+          xAxis: {
+            type: 'category',
+            data: ['Fidelidade Factual\n(Faithfulness)', 'Taxa de Verificação\nde Citações'],
+            axisLabel: { color: '#94a3b8', fontSize: 11 }
+          },
+          yAxis: {
+            type: 'value',
+            name: 'Score (0.0 a 1.0)',
+            min: 0.0,
+            max: 1.0,
+            axisLabel: { color: '#94a3b8' },
+            splitLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.05)' } }
+          },
+          series: [
+            {
+              name: 'single_pass (Agente Único Direto)',
+              type: 'bar',
+              barWidth: '28%',
+              itemStyle: { color: '#10b981', borderRadius: [4, 4, 0, 0] },
+              data: [
+                { value: 0.8943, label: { show: true, position: 'top', color: '#34d399', formatter: '0,894' } },
+                { value: 0.8210, label: { show: true, position: 'top', color: '#34d399', formatter: '82,1%' } }
+              ]
+            },
+            {
+              name: 'multiagente (Researcher-Auditor-Adjudicator)',
+              type: 'bar',
+              barWidth: '28%',
+              itemStyle: { color: '#f59e0b', borderRadius: [4, 4, 0, 0] },
+              data: [
+                { value: 0.9096, label: { show: true, position: 'top', color: '#fbbf24', formatter: '0,910' } },
+                { value: 0.8271, label: { show: true, position: 'top', color: '#fbbf24', formatter: '82,7%' } }
+              ]
+            }
+          ]
+        };
+        myChartQuality.setOption(optionQuality);
+        window.addEventListener('resize', () => myChartQuality.resize());
+      }
+
+      // 2. Gráfico de Custo e Latência em Segundos
+      const chartDomLatency = document.getElementById('chartH2Latency');
+      if (chartDomLatency) {
+        const myChartLatency = echarts.init(chartDomLatency);
+        const optionLatency = {
+          backgroundColor: 'transparent',
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'shadow' },
+            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+            borderColor: 'rgba(255, 255, 255, 0.15)',
+            textStyle: { color: '#f8fafc' },
+            formatter: function(params) {
+              return `<strong>${params[0].axisValue}</strong><br/>` +
+                params.map(p => `${p.marker} ${p.seriesName}: <strong>${p.value} s</strong>`).join('<br/>');
+            }
+          },
+          legend: {
+            data: ['single_pass (Agente Único Direto)', 'multiagente (Researcher-Auditor-Adjudicator)'],
+            top: 0,
+            textStyle: { color: '#cbd5e1', fontSize: 10 }
+          },
+          grid: {
+            top: 60,
+            left: 55,
+            right: 25,
+            bottom: 40
+          },
+          xAxis: {
+            type: 'category',
+            data: ['Latência Média Operacional\n(Tempo de Espera do Usuário)'],
+            axisLabel: { color: '#94a3b8', fontSize: 11 }
+          },
+          yAxis: {
+            type: 'value',
+            name: 'Tempo em Segundos (s)',
+            min: 0,
+            max: 150,
+            axisLabel: { color: '#f87171', formatter: '{value} s' },
+            splitLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.05)' } }
+          },
+          series: [
+            {
+              name: 'single_pass (Agente Único Direto)',
+              type: 'bar',
+              barWidth: '28%',
+              itemStyle: { color: '#10b981', borderRadius: [4, 4, 0, 0] },
+              data: [
+                { value: 76.59, label: { show: true, position: 'top', color: '#34d399', formatter: '76,6 s' } }
+              ]
+            },
+            {
+              name: 'multiagente (Researcher-Auditor-Adjudicator)',
+              type: 'bar',
+              barWidth: '28%',
+              itemStyle: { color: '#ef4444', borderRadius: [4, 4, 0, 0] },
+              data: [
+                { value: 124.51, label: { show: true, position: 'top', color: '#f87171', fontWeight: 'bold', formatter: '124,5 s (+62,6%)' } }
+              ]
+            }
+          ]
+        };
+        myChartLatency.setOption(optionLatency);
+        window.addEventListener('resize', () => myChartLatency.resize());
+      }
+    }
+
+    // Gráfico 3: Matriz de Significância Estatística (Wilcoxon + Bonferroni)
+    function initSignificanceMatrix() {
+      const chartDom = document.getElementById('chartSignificanceMatrix');
+      const myChart = echarts.init(chartDom);
+
+      const conditions = [
+        'c6 (Híbrido s/ Rerank)',
+        'c5 (GraphRAG Incr.)',
+        'c2 (Híbrido c/ Rerank)',
+        'c8 (BM25 Puro)',
+        'c1 (Denso)',
+        'c3 (GraphRAG Puro)'
+      ];
+
+      // [x, y, p_valor_categoria]
+      // 0: Identidade / Não aplicável
+      // 1: Não significativo (Empate Estatístico / p >= 0.05) - Cor Azul suave
+      // 2: Significativo (Diferença Comprovada / p < 0.05) - Cor Verde/Destaque
+      const matrixData = [
+        // c6 vs todas
+        [0, 0, 0], [1, 0, 1], [2, 0, 1], [3, 0, 2], [4, 0, 2], [5, 0, 2],
+        // c5 vs todas
+        [0, 1, 1], [1, 1, 0], [2, 1, 1], [3, 1, 2], [4, 1, 2], [5, 1, 2],
+        // c2 vs todas
+        [0, 2, 1], [1, 2, 1], [2, 2, 0], [3, 2, 2], [4, 2, 2], [5, 2, 2],
+        // c8 vs todas
+        [0, 3, 2], [1, 3, 2], [2, 3, 2], [3, 3, 0], [4, 3, 2], [5, 3, 2],
+        // c1 vs todas
+        [0, 4, 2], [1, 4, 2], [2, 4, 2], [3, 4, 2], [4, 4, 0], [5, 4, 2],
+        // c3 vs todas
+        [0, 5, 2], [1, 5, 2], [2, 5, 2], [3, 5, 2], [4, 5, 2], [5, 5, 0]
+      ];
+
+      const option = {
+        backgroundColor: 'transparent',
+        tooltip: {
+          position: 'top',
+          backgroundColor: 'rgba(15, 23, 42, 0.95)',
+          borderColor: 'rgba(255, 255, 255, 0.15)',
+          textStyle: { color: '#f8fafc' },
+          formatter: function(params) {
+            const x = conditions[params.data[0]];
+            const y = conditions[params.data[1]];
+            const val = params.data[2];
+            let status = 'Mesma condição';
+            if (val === 1) status = 'EMPATE ESTATÍSTICO (p ≥ 0,05) — Sem evidência de diferença';
+            if (val === 2) status = 'DIFERENÇA SIGNIFICATIVA (p < 0,05) — Vencedor estatístico';
+            return `<strong>${x}</strong> vs <strong>${y}</strong><br/>Resultado: <span style="color:#38bdf8;">${status}</span>`;
+          }
+        },
+        grid: {
+          top: 20,
+          bottom: 80,
+          left: 170,
+          right: 30
+        },
+        xAxis: {
+          type: 'category',
+          data: conditions,
+          splitArea: { show: true },
+          axisLabel: { color: '#94a3b8', rotate: 25, fontSize: 10 }
+        },
+        yAxis: {
+          type: 'category',
+          data: conditions,
+          splitArea: { show: true },
+          axisLabel: { color: '#94a3b8', fontSize: 10 }
+        },
+        visualMap: {
+          min: 0,
+          max: 2,
+          calculable: false,
+          show: false,
+          inRange: {
+            color: ['#1e293b', '#0284c7', '#10b981']
+          }
+        },
+        series: [
+          {
+            name: 'P-Valor Pareado',
+            type: 'heatmap',
+            data: matrixData,
+            label: {
+              show: true,
+              formatter: function(params) {
+                if (params.data[2] === 0) return '—';
+                if (params.data[2] === 1) return 'Empate';
+                if (params.data[2] === 2) return 'Sig. ✓';
+              },
+              color: '#ffffff',
+              fontSize: 10
+            },
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
+            }
+          }
+        ]
+      };
+
+      myChart.setOption(option);
+      window.addEventListener('resize', () => myChart.resize());
+    }
+
+    // -------------------------------------------------------------
+    // 2. CRONÔMETRO INTERATIVO DE 10 MINUTOS
+    // -------------------------------------------------------------
+    function initTimer() {
+      let timeLeft = 600; // 10 minutos em segundos
+      let timerId = null;
+      const display = document.getElementById('timerDisplay');
+      const btnStart = document.getElementById('btnStartTimer');
+      const btnReset = document.getElementById('btnResetTimer');
+
+      function updatePhase(secRemaining) {
+        if (secRemaining <= 60 && secRemaining > 15) {
+          display.className = 'timer-display warning';
+        } else if (secRemaining <= 15) {
+          display.className = 'timer-display danger';
+        } else {
+          display.className = 'timer-display';
+        }
+      }
+
+      function renderTime() {
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        display.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        updatePhase(timeLeft);
+      }
+
+      btnStart.addEventListener('click', function() {
+        if (timerId === null) {
+          timerId = setInterval(() => {
+            if (timeLeft > 0) {
+              timeLeft--;
+              renderTime();
+            } else {
+              clearInterval(timerId);
+              timerId = null;
+              btnStart.textContent = '▶ Iniciar';
+            }
+          }, 1000);
+          btnStart.textContent = '⏸ Pausar';
+        } else {
+          clearInterval(timerId);
+          timerId = null;
+          btnStart.textContent = '▶ Retomar';
+        }
+      });
+
+      btnReset.addEventListener('click', function() {
+        clearInterval(timerId);
+        timerId = null;
+        timeLeft = 600;
+        btnStart.textContent = '▶ Iniciar';
+        renderTime();
+      });
+    }
+
+    // -------------------------------------------------------------
+    // 3. ACCORDION DO FAQ
+    // -------------------------------------------------------------
+    function initAccordion() {
+      const triggers = document.querySelectorAll('.accordion-trigger');
+      triggers.forEach(trigger => {
+        trigger.addEventListener('click', () => {
+          const item = trigger.parentElement;
+          item.classList.toggle('open');
+        });
+      });
+    }
+
+    // -------------------------------------------------------------
+    // 4. BUSCA DINÂMICA DO GLOSSÁRIO
+    // -------------------------------------------------------------
+    function initGlossaryFilter() {
+      const searchInput = document.getElementById('glossarySearch');
+      const cards = document.querySelectorAll('.glossary-card');
+
+      searchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase().trim();
+        cards.forEach(card => {
+          const match = card.getAttribute('data-term').toLowerCase().includes(term) ||
+                        card.textContent.toLowerCase().includes(term);
+          card.style.display = match ? 'block' : 'none';
+        });
+      });
+    }
+
+    // -------------------------------------------------------------
+    // 5. NAVEGAÇÃO SUAVE E SCROLLSPY
+    // -------------------------------------------------------------
+    function initNavScroll() {
+      const navButtons = document.querySelectorAll('.nav-btn');
+      window.addEventListener('scroll', () => {
+        let current = '';
+        const sections = document.querySelectorAll('section');
+        sections.forEach(section => {
+          const sectionTop = section.offsetTop;
+          if (pageYOffset >= sectionTop - 150) {
+            current = section.getAttribute('id');
+          }
+        });
+
+        navButtons.forEach(btn => {
+          btn.classList.remove('active');
+          if (btn.getAttribute('href') === `#${current}`) {
+            btn.classList.add('active');
+          }
+        });
+      });
+    }
+  </script>
+</body>
+</html>
