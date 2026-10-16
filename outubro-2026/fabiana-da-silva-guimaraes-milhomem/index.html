@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auditoria normativa assistida por IA generativa · Milhomem (2026)</title>
+<meta name="description" content="Framework declarativo de auditoria normativa assistida por IA generativa para avaliação da conformidade da prestação de contas pública: aplicação multi-institucional no Poder Judiciário brasileiro. Resultados preliminares, descritivos.">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Ir para o conteúdo</a>
+
+<header class="topo" id="topo">
+  <a class="marca" href="#inicio" aria-label="Início — Auditoria normativa assistida por IA generativa">
+    <svg class="marca__sinal" viewBox="0 0 24 32" aria-hidden="true"><rect x="3" y="2" width="18" height="28" rx="1.5" fill="currentColor"/><path d="M7 9h10M7 13h7M7 17h10" stroke="var(--fundo-marca)" stroke-width="1.6"/><circle cx="12" cy="24" r="2.6" fill="none" stroke="var(--ambar)" stroke-width="1.6"/></svg>
+    <span class="marca__texto"><strong>Auditoria normativa</strong><small>IA generativa · Poder Judiciário</small></span>
+  </a>
+  <nav class="menu" aria-label="Áreas do site">
+    <a href="#inicio" data-vista="inicio">Início</a>
+    <a href="#metodologia" data-vista="metodologia">Metodologia</a>
+    <a href="#resultados" data-vista="resultados">Resultados</a>
+    <a href="#execucoes" data-vista="execucoes">40 execuções</a>
+    <a href="#fontes" data-vista="fontes">Fontes</a>
+  </nav>
+  <button class="movimento" id="btn-movimento" type="button" aria-pressed="false" title="Desativa as animações e os movimentos de câmera das cenas 3D e as transições da interface, para uma leitura mais estável. A escolha fica salva neste navegador; não altera dados nem textos.">
+    <span class="movimento__ico" aria-hidden="true"></span><span id="btn-movimento-txt">Reduzir movimento</span>
+  </button>
+</header>
+
+<main id="conteudo" tabindex="-1">
+
+<!-- ============================================================ INÍCIO -->
+<section class="vista" id="v-inicio" data-vista="inicio" aria-labelledby="t-inicio">
+  <div class="abertura">
+    <div class="abertura__palco" id="palco-abertura">
+      <canvas id="cv-abertura" aria-label="Cena tridimensional: uma estela de pedra, a norma, tem dez requisitos que se destacam e se alinham em duas fileiras, quatro do critério IN84-27-CAPUT e seis do critério PNTP-12.1-12.2-SIC, enquanto a luz do salão aumenta." role="img"></canvas>
+      <div class="rotulos" id="rotulos-abertura" aria-hidden="true">
+        <span class="rotulo" data-r="norma">A norma</span>
+        <span class="rotulo rotulo--a" data-r="a">4 requisitos · IN84-27-CAPUT</span>
+        <span class="rotulo rotulo--b" data-r="b">6 requisitos · PNTP-12.1-12.2-SIC</span>
+      </div>
+      <div class="sem-webgl" id="sem-webgl-abertura" hidden>
+        <svg viewBox="0 0 900 520" role="img" aria-label="Planta da abertura: uma norma que origina dez requisitos verificáveis">
+          <rect width="900" height="520" fill="#14181b"/>
+          <rect x="120" y="70" width="150" height="360" fill="#d9d2c3"/><rect x="112" y="60" width="166" height="12" fill="#c8993a"/>
+          <g fill="#1f7a7e"><rect x="150" y="130" width="90" height="10"/><rect x="150" y="160" width="90" height="10"/><rect x="150" y="190" width="90" height="10"/><rect x="150" y="220" width="90" height="10"/></g>
+          <g fill="#5565ad"><rect x="150" y="250" width="90" height="10"/><rect x="150" y="280" width="90" height="10"/><rect x="150" y="310" width="90" height="10"/><rect x="150" y="340" width="90" height="10"/><rect x="150" y="370" width="90" height="10"/><rect x="150" y="400" width="90" height="10"/></g>
+          <g fill="#d9d2c3"><rect x="400" y="160" width="60" height="96"/><rect x="480" y="160" width="60" height="96"/><rect x="560" y="160" width="60" height="96"/><rect x="640" y="160" width="60" height="96"/></g>
+          <g fill="#d9d2c3"><rect x="360" y="320" width="60" height="96"/><rect x="440" y="320" width="60" height="96"/><rect x="520" y="320" width="60" height="96"/><rect x="600" y="320" width="60" height="96"/><rect x="680" y="320" width="60" height="96"/><rect x="760" y="320" width="60" height="96"/></g>
+          <g fill="#1f7a7e"><rect x="400" y="160" width="60" height="12"/><rect x="480" y="160" width="60" height="12"/><rect x="560" y="160" width="60" height="12"/><rect x="640" y="160" width="60" height="12"/></g>
+          <g fill="#5565ad"><rect x="360" y="320" width="60" height="12"/><rect x="440" y="320" width="60" height="12"/><rect x="520" y="320" width="60" height="12"/><rect x="600" y="320" width="60" height="12"/><rect x="680" y="320" width="60" height="12"/><rect x="760" y="320" width="60" height="12"/></g>
+        </svg>
+      </div>
+      <div class="palco__controles">
+        <button type="button" class="mini" id="abertura-reiniciar">Rever abertura</button>
+        <button type="button" class="mini" id="abertura-pular">Pular abertura</button>
+      </div>
+    </div>
+    <div class="abertura__texto">
+      <p class="sobretitulo">Dissertação de mestrado · IDP · 2026 · Resultados preliminares</p>
+      <h1 id="t-inicio">Framework declarativo de auditoria normativa assistida por IA generativa</h1>
+      <p class="subtitulo">para avaliação da conformidade da prestação de contas pública: uma aplicação multi-institucional no Poder Judiciário brasileiro</p>
+      <p class="pergunta">A IA acertou o requisito. <em>Mas encontrou a evidência certa?</em></p>
+      <div class="acoes">
+        <a class="botao botao--primario" href="#resultados" id="cta-resultados">Entrar nos resultados</a>
+        <a class="botao botao--fantasma" href="#metodologia">Percorrer a metodologia</a>
+      </div>
+      <p class="autoria">Fabiana da Silva Guimarães Milhomem · Orientador: Prof. Dr. Danny de Castro Soares</p>
+    </div>
+  </div>
+
+  <div class="col">
+    <section class="pergunta-pesquisa" aria-labelledby="t-pergunta">
+      <h2 id="t-pergunta" class="sobretitulo">Pergunta de pesquisa</h2>
+      <blockquote class="pergunta-pesquisa__corpo">
+        <p class="pergunta-pesquisa__q">Como um <em>framework</em> declarativo de auditoria normativa assistido por IA generativa pode operacionalizar requisitos e apoiar a avaliação da conformidade da prestação de contas pública?</p>
+        <p class="pergunta-pesquisa__c">Considerando o atendimento dos requisitos, a seleção das evidências e a estabilidade dos resultados entre execuções.</p>
+      </blockquote>
+    </section>
+
+    <div class="leitura">
+      <h2 class="titulo-secao">O desafio da evidência</h2>
+      <div class="leitura__corpo">
+        <p class="leitura__abre">Acertar o requisito <strong>não basta</strong>: uma conclusão de auditoria precisa mostrar de onde ela vem.</p>
+        <div>
+          <p>A prestação de contas pública exige transparência que possa ser examinada. Uma IA generativa pode localizar e organizar evidências nos portais, mas afirmar que a obrigação foi cumprida, sem apontar a prova, não serve a uma auditoria.</p>
+          <p>Por isso o trabalho separa os papéis: a IA localiza, uma rotina determinística compara com um gabarito independente e a pessoa auditora decide.</p>
+        </div>
+      </div>
+      <p class="nota">Estudo descritivo com quatro instituições do Poder Judiciário; os resultados não são generalizáveis.</p>
+    </div>
+
+    <nav class="indice" aria-label="Caminhos pelo trabalho">
+      <a href="#metodologia"><span class="indice__n">01</span><span class="indice__t">Metodologia</span><span class="indice__d">Da norma à métrica, em sete estações</span></a>
+      <a href="#resultados"><span class="indice__n">02</span><span class="indice__t">Resultados</span><span class="indice__d">Três métricas, três perguntas, uma síntese</span></a>
+      <a href="#execucoes"><span class="indice__n">03</span><span class="indice__t">40 execuções</span><span class="indice__d">Cada execução, lado a lado</span></a>
+      <a href="#fontes"><span class="indice__n">04</span><span class="indice__t">Fontes</span><span class="indice__d">Portais de transparência navegados</span></a>
+    </nav>
+  </div>
+</section>
+
+<!-- ============================================================ METODOLOGIA -->
+<section class="vista" id="v-metodologia" data-vista="metodologia" aria-labelledby="t-metodologia" hidden>
+  <header class="cabecalho-vista cabecalho-vista--compacto col">
+    <div>
+      <p class="sobretitulo">Metodologia</p>
+      <h1 id="t-metodologia">Da norma à métrica, em sete estações</h1>
+    </div>
+    <p class="lide">Uma sequência lógica, não uma caixa-preta: cada estação diz o que é feito, por quem — a IA generativa ou uma rotina determinística — e o que <em>não</em> é feito.</p>
+  </header>
+  <dl class="resumo-exp col" aria-label="Resumo do experimento" id="resumo-exp">
+    <div><dt>Critérios normativos</dt><dd id="res-crit">2</dd><small>IN84-27-CAPUT · PNTP-12.1-12.2-SIC</small></div>
+    <div><dt>Instituições</dt><dd id="res-inst">4</dd><small>CNJ · STF · TJDFT · TST</small></div>
+    <div><dt>Itens por execução</dt><dd id="res-itens">10</dd><small>4 + 6 requisitos verificáveis</small></div>
+    <div><dt>Execuções</dt><dd id="res-exec">40</dd><small>10 por instituição</small></div>
+  </dl>
+
+  <div class="arquitetura" id="arquitetura">
+    <div class="arquitetura__palco" id="palco-arq">
+      <canvas id="cv-arq" role="img" aria-label="Percurso tridimensional pelas sete estações da arquitetura: norma, quatro portais, coleta orientada por IA, evidências, comparação com o gabarito, métricas e interpretação humana."></canvas>
+      <div class="sem-webgl" id="sem-webgl-arq" hidden><p>A visualização tridimensional não está disponível neste navegador. Use o painel ao lado: ele contém o mesmo conteúdo.</p></div>
+    </div>
+    <aside class="painel-estacao" aria-label="Explicação e navegação das estações">
+      <ol class="estacoes" id="estacoes" aria-label="Estações da arquitetura"></ol>
+      <div class="detalhe-estacao" id="detalhe-estacao" aria-live="polite"></div>
+      <div class="painel-estacao__controles">
+        <button type="button" class="mini" id="arq-ant">← Anterior</button>
+        <button type="button" class="mini" id="arq-play" aria-pressed="false">Reproduzir percurso</button>
+        <button type="button" class="mini" id="arq-prox">Próxima →</button>
+      </div>
+    </aside>
+  </div>
+
+  <div class="col">
+
+  <section class="filme" aria-labelledby="t-filme">
+    <div class="filme__cabeca">
+      <p class="sobretitulo">Filme · contribuição científica</p>
+      <h2 id="t-filme" class="titulo-secao">O framework em cerca de um minuto</h2>
+    </div>
+    <div class="filme__apresentacao">
+      <p class="filme__texto">Uma síntese audiovisual do framework de auditoria normativa assistida por IA generativa: da obrigação normativa à identificação e organização das evidências, passando pela comparação determinística com um gabarito independente, até a interpretação humana dos resultados.</p>
+      <p class="filme__info">Duração aproximada: 60 segundos · Formato: 16:9 · Narração em português brasileiro</p>
+    </div>
+    <div class="cinema">
+      <div class="cinema__tela" id="cinema-tela">
+        <video class="cinema__video" id="cinema-video" controls preload="metadata" playsinline poster="assets/video/poster-filme-v4.jpg" aria-describedby="filme-nota" aria-label="Filme: o framework em cerca de um minuto">
+          <source src="assets/video/filme-framework-v4.mp4" type="video/mp4">
+          Seu navegador não reproduz vídeo HTML5. A transcrição da narração está disponível abaixo.
+        </video>
+        <div class="cinema__erro" id="cinema-erro" role="alert" hidden>Não foi possível carregar o filme. Verifique se o arquivo <code>assets/video/filme-framework-v4.mp4</code> está presente; a transcrição abaixo continua disponível.</div>
+      </div>
+      <div class="cinema__controles">
+        <button type="button" class="botao" id="cinema-prev3d">Voltar ao percurso interativo</button>
+        <span class="cinema__meta">Transcrição da narração disponível abaixo.</span>
+        <a class="mini" href="#resultados">Avançar sem assistir</a>
+      </div>
+      <p class="nota filme__nota" id="filme-nota">As cenas são representações conceituais geradas com IA generativa. O filme ilustra o funcionamento do framework; não representa uma execução ao vivo da auditoria.</p>
+      <details class="transcricao">
+        <summary>Transcrição da narração</summary>
+        <p id="transcricao-texto"></p>
+      </details>
+    </div>
+  </section>
+
+  <section class="parametros" aria-labelledby="t-param">
+    <h2 id="t-param" class="titulo-secao">Parâmetros e critérios do experimento</h2>
+    <div class="duas-colunas">
+      <div id="tabela-criterios"></div>
+      <div id="tabela-parametros"></div>
+    </div>
+    <p class="nota" id="nota-operacional"></p>
+  </section>
+  </div>
+</section>
+
+<!-- ============================================================ RESULTADOS -->
+<section class="vista" id="v-resultados" data-vista="resultados" aria-labelledby="t-resultados" hidden>
+  <header class="cabecalho-vista cabecalho-vista--compacto col">
+    <div>
+      <p class="sobretitulo">Resultados</p>
+      <h1 id="t-resultados">Três métricas, <em>três perguntas</em></h1>
+    </div>
+  </header>
+  <div class="subnav" role="tablist" aria-label="Métricas e síntese">
+    <button role="tab" id="aba-recall" aria-controls="p-recall" data-aba="recall" class="aba aba--recall"><span class="aba__n">1</span>Recall_item</button>
+    <button role="tab" id="aba-cobertura" aria-controls="p-cobertura" data-aba="cobertura" class="aba aba--cobertura"><span class="aba__n">2</span>Cobertura_evidência</button>
+    <button role="tab" id="aba-precisao" aria-controls="p-precisao" data-aba="precisao" class="aba aba--precisao"><span class="aba__n">3</span>Precisão_evidência</button>
+    <span class="subnav__sep" aria-hidden="true"></span>
+    <button role="tab" id="aba-sintese" aria-controls="p-sintese" data-aba="sintese" class="aba aba--sintese"><span class="aba__n">4</span>Síntese interpretativa</button>
+  </div>
+  <div class="paineis">
+    <section id="p-recall" role="tabpanel" aria-labelledby="aba-recall" data-painel="recall"></section>
+    <section id="p-cobertura" role="tabpanel" aria-labelledby="aba-cobertura" data-painel="cobertura" hidden></section>
+    <section id="p-precisao" role="tabpanel" aria-labelledby="aba-precisao" data-painel="precisao" hidden></section>
+    <section id="p-sintese" role="tabpanel" aria-labelledby="aba-sintese" data-painel="sintese" hidden></section>
+  </div>
+</section>
+
+<!-- ============================================================ 40 EXECUÇÕES -->
+<section class="vista" id="v-execucoes" data-vista="execucoes" aria-labelledby="t-execucoes" hidden>
+  <header class="cabecalho-vista cabecalho-vista--compacto col">
+    <div>
+      <p class="sobretitulo">40 execuções</p>
+      <h1 id="t-execucoes">Cada execução, lado a lado</h1>
+    </div>
+    <p class="lide">Quatro instituições × dez repetições (Rep. 0 a Rep. 9). Escolha a métrica e selecione uma célula, uma instituição (linha) ou uma repetição (coluna). A tabela e o painel acompanham a seleção.</p>
+  </header>
+  <div class="exec col">
+    <div class="exec__controles">
+      <fieldset class="seletor-metrica">
+        <legend>Métrica no mapa</legend>
+        <label><input type="radio" name="metrica" value="recall" checked><span class="chip chip--recall">Recall_item</span></label>
+        <label><input type="radio" name="metrica" value="cobertura"><span class="chip chip--cobertura">Cobertura_evidência</span></label>
+        <label><input type="radio" name="metrica" value="precisao"><span class="chip chip--precisao">Precisão_evidência</span></label>
+      </fieldset>
+      <div class="legenda" id="legenda-mapa"></div>
+    </div>
+    <div class="exec__mapa" id="mapa" role="grid" aria-label="Mapa de calor das 40 execuções"></div>
+    <div class="exec__baixo">
+      <div class="exec__tabela" id="tabela-exec"></div>
+      <aside class="painel-contexto" id="painel-exec" aria-live="polite"></aside>
+    </div>
+    <p class="nota" id="nota-exec"></p>
+  </div>
+</section>
+
+<!-- ============================================================ FONTES -->
+<section class="vista" id="v-fontes" data-vista="fontes" aria-labelledby="t-fontes" hidden>
+  <header class="cabecalho-vista cabecalho-vista--compacto col">
+    <div>
+      <p class="sobretitulo">Fontes</p>
+      <h1 id="t-fontes">Portais de transparência navegados</h1>
+    </div>
+    <p class="lide">Portais institucionais e hubs de transparência percorridos pelo agente de IA em cada uma das quatro instituições, com a origem declarada e a data da coleta.</p>
+  </header>
+  <div id="conteudo-fontes" class="col"></div>
+</section>
+</main>
+
+<footer class="rodape">
+  <p>Milhomem, F. S. G. (2026). <em>Framework declarativo de auditoria normativa assistida por IA generativa para avaliação da conformidade da prestação de contas pública</em>. Dissertação (Mestrado em Administração Pública) — IDP, Brasília.</p>
+  <p><a href="#fontes">Portais de transparência navegados</a></p>
+</footer>
+
+<noscript><p class="noscript">Este site usa JavaScript para exibir os gráficos e a visualização 3D. Os dados completos estão em <a href="assets/js/dados.js">assets/js/dados.js</a>.</p></noscript>
+
+<script src="assets/js/dados.js"></script>
+<script src="vendor/three.min.js" defer></script>
+<script src="assets/js/util.js" defer></script>
+<script src="assets/js/cena-comum.js" defer></script>
+<script src="assets/js/cena-abertura.js" defer></script>
+<script src="assets/js/cena-arquitetura.js" defer></script>
+<script src="assets/js/graficos.js" defer></script>
+<script src="assets/js/mapa.js" defer></script>
+<script src="assets/js/app.js" defer></script>
+</body>
+</html>
